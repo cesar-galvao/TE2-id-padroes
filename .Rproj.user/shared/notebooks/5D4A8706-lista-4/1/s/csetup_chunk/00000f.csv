@@ -1,0 +1,130 @@
+"0","pacman::p_load(tidyverse, tidymodels, cowplot, MASS, latex2exp, caret, randomForest)
+"
+"2","Installing package into ‘/home/cesaragalvao/R/x86_64-pc-linux-gnu-library/4.4’
+(as ‘lib’ is unspecified)
+"
+"2","trying URL 'https://cloud.r-project.org/src/contrib/randomForest_4.7-1.1.tar.gz'
+"
+"2","Content type 'application/x-gzip'"
+"2"," length 80886 bytes (78 KB)
+"
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","="
+"2","
+"
+"2","downloaded 78 KB
+
+"
+"2","* installing *source* package ‘randomForest’ ...
+"
+"2","** package ‘randomForest’ successfully unpacked and MD5 sums checked
+"
+"2","** using staged installation
+"
+"2","** libs
+"
+"2","using C compiler: ‘gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0’
+"
+"2","using Fortran compiler: ‘GNU Fortran (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0’
+"
+"1","gcc -I""/usr/share/R/include"" -DNDEBUG       -fpic  -g -O2 -ffile-prefix-map=/build/r-base-H8urij/r-base-4.4.0=. -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2  -c classTree.c -o classTree.o
+"
+"1","gcc -I""/usr/share/R/include"" -DNDEBUG       -fpic  -g -O2 -ffile-prefix-map=/build/r-base-H8urij/r-base-4.4.0=. -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2  -c init.c -o init.o
+"
+"1","gcc -I""/usr/share/R/include"" -DNDEBUG       -fpic  -g -O2 -ffile-prefix-map=/build/r-base-H8urij/r-base-4.4.0=. -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2  -c regTree.c -o regTree.o
+"
+"1","gcc -I""/usr/share/R/include"" -DNDEBUG       -fpic  -g -O2 -ffile-prefix-map=/build/r-base-H8urij/r-base-4.4.0=. -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2  -c regrf.c -o regrf.o
+"
+"1","gcc -I""/usr/share/R/include"" -DNDEBUG       -fpic  -g -O2 -ffile-prefix-map=/build/r-base-H8urij/r-base-4.4.0=. -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2  -c rf.c -o rf.o
+"
+"1","gfortran  -fpic  -g -O2 -ffile-prefix-map=/build/r-base-H8urij/r-base-4.4.0=. -fstack-protector-strong  -c rfsub.f -o rfsub.o
+"
+"1","gcc -I""/usr/share/R/include"" -DNDEBUG       -fpic  -g -O2 -ffile-prefix-map=/build/r-base-H8urij/r-base-4.4.0=. -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2  -c rfutils.c -o rfutils.o
+"
+"1","gcc -shared -L/usr/lib/R/lib -Wl,-Bsymbolic-functions -flto=auto -ffat-lto-objects -flto=auto -Wl,-z,relro -o randomForest.so classTree.o init.o regTree.o regrf.o rf.o rfsub.o rfutils.o -lgfortran -lm -lquadmath -L/usr/lib/R/lib -lR
+"
+"2","installing to /home/cesaragalvao/R/x86_64-pc-linux-gnu-library/4.4/00LOCK-randomForest/00new/randomForest/libs
+"
+"2","** R
+"
+"2","** data
+"
+"2","** inst
+"
+"2","** byte-compile and prepare package for lazy loading
+"
+"2","** help
+"
+"2","*** installing help indices
+"
+"2","** building package indices
+"
+"2","** testing if installed package can be loaded from temporary location
+"
+"2","** checking absolute paths in shared objects and dynamic libraries
+"
+"2","** testing if installed package can be loaded from final location
+"
+"2","** testing if installed package keeps a record of temporary installation path
+"
+"2","* DONE (randomForest)
+"
+"2","
+"
+"2",""
+"2","The downloaded source packages are in
+	‘/tmp/Rtmp4MkQnv/downloaded_packages’"
+"2",""
+"2","
+"
+"2","
+randomForest installed
+"

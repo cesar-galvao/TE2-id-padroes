@@ -1,0 +1,465 @@
+---
+title: "Lista 2"
+author: 
+  - César A. Galvão - 190011572
+  - Gabriela Carneiro - 180120816
+  - João Vitor Vasconcelos - 170126064
+lang: pt
+execute:
+  message: false
+  warning: false
+format: 
+  pdf:
+    code-overflow: wrap
+    df-print: paged
+    documentclass: article
+    fig-pos: H
+    tbl-pos: H
+    cite-method: citeproc
+    papersize: a4paper
+    keep-tex: true
+    mathspec: true
+    toc: true
+    toc-depth: 2
+    include-in-header: 
+       text: |
+         \usepackage{fvextra}
+         \usepackage[auth-lg]{authblk}
+         \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+         \DefineVerbatimEnvironment{OutputCode}{Verbatim}{breaklines,commandchars=\\\{\}}
+bibliography: references.bib
+---
+
+{{< pagebreak >}}
+
+```{r}
+#| label: setup
+#| include: false
+
+if (!("pacman" %in% installed.packages())){
+  install.packages("pacman")
+}
+
+pacman::p_load(tidyverse, tidymodels, cowplot, latex2exp, MVN, heplots)
+```
+
+# Questão 3
+
+Considerando duas classes com distribuição normal multivariada tal que $\omega_1 \sim N_2(\boldsymbol{\mu}, \boldsymbol{\Sigma})$ com
+
+$$
+\boldsymbol{\mu} = \begin{bmatrix} 1 \\ 0 \end{bmatrix} \quad \text{e} \quad \boldsymbol{\Sigma} = \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} = \boldsymbol{I}_2
+$$
+
+e $\omega_2 \sim N_2(\boldsymbol{\mu}, \boldsymbol{\Sigma})$ com
+
+$$
+\boldsymbol{\mu} = \begin{bmatrix} -1 \\ 0 \end{bmatrix} \quad \text{e} \quad \boldsymbol{\Sigma} = \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} = \boldsymbol{I}_2
+$$  
+
+## Item a
+
+Gere 100 valores para $\omega_1$ e $\omega_2$.
+
+------------------------------------------------------------------------
+
+Os valores para as variáveis serão gerados utilizando o algoritmo de Cholesky disponibilizado na lista, comentada abaixo para facilitar a compreensão:
+
+```{r}
+#| label: func-cholesky-mvnorm
+
+rmvn.cholesky <- function( n , mu , Sigma ) {
+  p <- length(mu) # normal p-variada
+  Q <- chol(Sigma) # {base} cholesky decomposition
+  Z <- matrix(rnorm(n*p), nrow=n, ncol = p) # matriz nxp ~ N_p(0,1)
+  X <- Z %*% Q + # matriz nxp ~ N_p(0,Σ)
+          matrix(mu, n, p, byrow=TRUE) #mu_1 e mu_2 em cada linha
+  return(X)
+}
+```
+
+ 
+
+A seguir, é escolhida uma semente para o gerador de números aleatórios e são geradas as variáveis. Uma prévia dos dados é exibida em seguida.
+
+```{r}
+#| label: geracao-w1w2
+
+set.seed(11572)
+
+n <- 100
+
+mu1 <- c(1, 0)
+Sigma1 <- diag(2)
+omega1 <- rmvn.cholesky(n, mu1, Sigma1)
+
+mu2 <- c(-1, 0)
+Sigma2 <- diag(2)
+omega2 <- rmvn.cholesky(n, mu2, Sigma2)
+```
+
+ 
+
+```{r}
+#| label: tbl-headomega
+#| tbl-cap: Primeiras linhas de $\omega_1$ e $\omega_2$.
+#| layout-ncol: 2
+#| echo: false
+#| tbl-pos: H
+
+head(omega1) %>% 
+  as_tibble() %>%
+  knitr::kable()
+
+head(omega2) %>% 
+  as_tibble() %>%
+  knitr::kable()
+
+```
+
+ 
+
+## Item b
+
+Verifique se os valores gerados seguem distribuição $N_2(\boldsymbol{\mu}, \boldsymbol{\Sigma})$. Lembre que neste caso, o par deve seguir uma distribuição $\chi^2$ e cada variável deve ter distribuição Normal.
+
+------------------------------------------------------------------------
+
+Considerando que cada variável deve seguir uma distribuição Normal univariada e que, neste caso, as matrizes de covariância são identidades --- ou seja, as normais bivariadas são compostas por normais univariadas independentes entre si ---, verificamos a normalidade da distribuição de cada componente de $\omega_1$ e $\omega_2$ utilizando gráficos quantil-quantil e testes Shapiro-Wilk.
+
+O código a seguir exibe a função montada para gerar os gráficos.
+
+```{r}
+#| label: func-qqplotw1w2
+
+plot_qq_mtvn <- function(x, var, i){
+  x %>% 
+  as_tibble %>%
+  ggplot(aes(sample = {{ var }})) +
+  geom_qq(alpha = .4) +
+  geom_qq_line() +
+  labs(x = "Quantis teóricos", 
+       y = substitute(paste("Quantis observados -", omega[i], "-", var), 
+                      list(var = substitute(var),
+                      i = substitute(i)))) +
+  theme_bw()+
+  theme(
+    axis.text = element_text(size = 7.5),
+    axis.title = element_text(size = 7.5)
+  )
+}
+```
+
+ 
+
+Com os gráficos gerados na @fig-qqplots a seguir vemos que a princípio não há motivos para visualmente rejeitar a normalidade dos dados. As caudas, como é de se esperar, são ou pouco mais pesadas.
+
+```{r}
+#| label: fig-qqplots
+#| fig-cap: QQ-plot para $\omega_1$ e $\omega_2$ em relação à distribuição normal.
+#| fig-height: 5
+
+plot_grid(plot_qq_mtvn(omega1, V1, 1),
+          plot_qq_mtvn(omega1, V2, 1),
+          plot_qq_mtvn(omega2, V1, 2),
+          plot_qq_mtvn(omega2, V2, 2), nrow = 2)
+```
+
+ 
+
+```{r}
+#| label: tbl-testshapiro
+#| tbl-cap: Teste de Shapiro-Wilk para componentes de $\omega_1$ e $\omega_2$.
+
+bind_cols(omega1, omega2) %>%
+  as_tibble() %>%
+  summarise(across(everything(), ~ shapiro.test(.)$p.value)) %>%
+  knitr::kable(
+    col.names = c("omega1_V1", "omega1_V2", "omega2_V1", "omega2_V2")
+  )
+```
+
+O teste Henze-Zirkler para normalidade multivariada aponta p-valores `r round(pull(MVN::mvn(omega1)$multivariateNormality[3]),2)` e `r round(pull(MVN::mvn(omega2)$multivariateNormality[3]),2)` para $\omega_1$ e $\omega_2$, respectivamente, não dando indícios de que se deva rejeitar a hipótese de normalidade.
+
+Além disso, para uma visualização estilo QQ-plot, utiliza-se `heplots::cqplot`. A normalidade multivariada é avaliada utilizando a distância Malanobis ao quadrado, que conforme @artes2023metodos, segue a forma:
+
+```{=tex}
+\begin{align}
+  D^2_M = (\boldsymbol{x} - \boldsymbol{\mu})^\top \Sigma^{-1} (\boldsymbol{x} - \boldsymbol{\mu}) \sim \chi^2_p
+\end{align}
+```
+Na @fig-qqchisq1 não é possível identificar pontos fora da banda de confiança, enquanto na @fig-qqchisq2 é possível ver alguns pontos de quantis inferiores fora da banda. No entanto, abos os conjuntos de dados serão considerados normais multivariadas.
+
+```{r}
+#| label: fig-qqchisq1
+#| fig-cap: QQ-plot para $\omega_1$ em relação à distribuição $\chi^2$.
+#| echo: false
+
+heplots::cqplot(omega1)
+```
+
+```{r}
+#| label: fig-qqchisq2
+#| fig-cap: QQ-plot para $\omega_2$ em relação à distribuição $\chi^2$.
+#| echo: false
+
+heplots::cqplot(omega2)
+```
+
+## Item c
+
+Para um determinado $\mu$ na razão de verossimilhança, determine as regiões $\Omega_1$ e $\Omega_2$ na regra de Neyman-Pearson.
+
+------------------------------------------------------------------------
+
+A seguir é criada uma função para avaliar a razão de verossimilhanças $\frac{p(x| \omega_1)}{p(x| \omega_2)}$ para nossos conjuntos de dados.
+
+```{r}
+#| label: func-razaovero
+p = 2
+S <- diag(2)
+
+# funcao para resolver a exponencial da verossimilhanca
+expo_norm <- function(x, mu, S){
+  part1 <- -t(t(x)-mu) %*% solve(S)
+  part2 <- (x-mu)
+  
+  return(part1[,1]*part2[,1] + part1[,2]*part2[,2])
+}
+
+#funcao para calcular a razao de verossimilhancas                             
+razao_vero <- function(x, p, mu1, mu2, S){
+  return(
+  # verossimilhanca sob mu1 dividida por 
+   exp(expo_norm(x, mu1, S)/2)/
+    # verossimilhanca sob mu2
+   exp(expo_norm(x, mu2, S)/2)
+  )
+}                             
+```
+
+ 
+
+Classificaremos considerando as regiões em que a razão de verossimilhanças dá mais suporte a $p(x| \omega_1)$ ou $p(x| \omega_2)$.
+
+```{r}
+#| label: razoesvero
+
+razoes <- c(
+  razao_vero(omega1, 2, mu1, mu2, S),
+  razao_vero(omega2, 2, mu1, mu2, S))
+                             
+# limite da regiao de classificaçao
+
+limite <- quantile(razoes, probs = 0.5)
+
+# tabelas com regioes corretas e classificacao
+
+classificacoes <- tibble(
+  regioes_corretas = rep(c("1", "2"), each = 100),
+  x1 = c(omega1[,1], omega2[,1]),
+  x2 = c(omega1[,2], omega2[,2]),
+  razoes = razoes,
+  classificacao = if_else(razoes > limite, "1", "2"),
+  acertos = if_else(regioes_corretas == classificacao, 1, 0)
+)
+```
+
+ 
+
+Quando a razão for superior à mediana das verossimilhanças, classificaremos como $\omega_1$ e no complementar quando for inferior à mediana. Em outras palavras,
+
+```{=tex}
+\begin{align}
+  \boldsymbol{x} \in \Omega_1 \Rightarrow \frac{p(x| \omega_1)}{p(x| \omega_2)} > `r limite`.
+\end{align}
+```
+Dessa forma, há `r paste0(format(mean(classificacoes$acertos) * 100, digits = 2), "%")` de acertos. A @tbl-acertosvero a seguir nos dá o desempenho da classificação:
+
+```{r}
+#| label: tbl-acertosvero
+#| echo: false
+#| tbl-cap: Tabela de contingências de classificações em $\omega_1$ e $\omega_2$ utilizando a regra de alocação de Neyman-Pearson.
+
+
+tabela <- table(classificacoes$regioes_corretas, classificacoes$classificacao)
+
+as.data.frame.matrix(tabela) %>%
+  mutate(Corretos = c("omega1", "omega2")) %>%
+  select(Corretos, everything()) %>%
+  knitr::kable(col.names = c(" ", "omega1", "omega2"))
+```
+
+ 
+
+Avaliamos graficamente as classificações a seguir:
+
+```{r}
+#| label: fig-classificacoes
+#| fig-cap: Grupos reais e preditos nas classes $\omega_1$ e $\omega_2$ utilizando regra de Neyman-Pearson.
+
+fig_corretas <- classificacoes %>%
+  ggplot(aes(x = x1, y = x2, color = regioes_corretas))+
+  geom_point()+
+  theme_bw()+
+  theme(legend.position = "bottom")
+
+fig_classificadas <- classificacoes %>%
+  ggplot(aes(x = x1, y = x2, color = classificacao))+
+  geom_point()+
+  theme_bw()+
+  theme(legend.position = "bottom")
+
+plot_grid(fig_corretas, fig_classificadas)
+
+```
+
+ 
+
+Este comportamento é esperado, visto que há matrizes de covariância e $\mu_2$ iguais, diferindo apenas em $X_1$.
+
+## Item d
+
+Considere diferentes valores $\bf{x} = [x_1 , x_2]^\top$ e utilize a regra de decisão de Bayes para alocar estes valores em $\Omega_1$ ou $\Omega_2$.
+
+------------------------------------------------------------------------
+
+De acordo com a regra de Bayes,
+
+```{=tex}
+\begin{align}
+  \boldsymbol{x} \in \Omega_1 \Rightarrow \frac{p(x| \omega_1)}{p(x| \omega_2)} > \frac{p(x| \omega_2)}{p(x| \omega_1)}.
+\end{align}
+```
+Dessa forma, classificamos a seguir as observações:
+
+```{r}
+razoes_bayes <- tibble( #monta as razoes de verossimilhanca
+  grupos = rep(c("1", "2"), each = 100),
+  vero1 = c(razao_vero(omega1, 2, mu1, mu2, S), razao_vero(omega2, 2, mu1, mu2, S)),
+  vero2 = c(razao_vero(omega1, 2, mu2, mu1, S),razao_vero(omega2, 2, mu2, mu1, S)),
+  x1 = c(omega1[,1], omega2[,1]),
+  x2 = c(omega1[,2], omega2[,2])
+  ) %>%
+  mutate(
+    classificacao = case_when(
+      vero1 > vero2 ~ "1",
+      vero2 > vero1 ~ "2"
+    ),
+    acertos = if_else(grupos == classificacao, 1, 0)
+  )
+```
+
+Nesse caso há `r paste0(format(mean(razoes_bayes$acertos) * 100, digits = 2), "%")` de acertos. A @tbl-acertosverobayes a seguir nos dá o desempenho da classificação:
+
+```{r}
+#| label: tbl-acertosverobayes
+#| echo: false
+#| tbl-cap: Tabela de contingências de classificações em $\omega_1$ e $\omega_2$ utilizando regra de Bayes.
+
+
+tabela_bayes <- table(razoes_bayes$grupos, classificacoes$classificacao)
+
+as.data.frame.matrix(tabela_bayes) %>%
+  mutate(Corretos = c("omega1", "omega2")) %>%
+  select(Corretos, everything()) %>%
+  knitr::kable(col.names = c(" ", "omega1", "omega2"))
+```
+
+ 
+
+Avaliamos graficamente as classificações a seguir:
+
+```{r}
+#| label: fig-classificacoesbayes
+#| fig-cap: Grupos reais e preditos nas classes $\omega_1$ e $\omega_2$ utilizando regra de Bayes.
+
+fig_corretas_bayes <- razoes_bayes %>%
+  ggplot(aes(x = x1, y = x2, color = grupos))+
+  geom_point()+
+  theme_bw()+
+  theme(legend.position = "bottom")
+
+fig_classificadas_bayes <- razoes_bayes %>%
+  ggplot(aes(x = x1, y = x2, color = classificacao))+
+  geom_point()+
+  theme_bw()+
+  theme(legend.position = "bottom")
+
+plot_grid(fig_corretas_bayes, fig_classificadas_bayes)
+
+```
+
+ 
+
+Neste caso, utilizando qualquer das regras de classificação se obtém os mesmos resultados.
+
+{{< pagebreak >}}
+
+# Questão 4
+
+Considere duas classes com distribuições multivariadas tal que $p(x|\omega_1) \sim N_p (\boldsymbol{\mu_1} , \boldsymbol{\Sigma})$ e $p(x|\omega_2) \sim N_p (\boldsymbol{\mu_2} , \boldsymbol{\Sigma})$. Mostre que o logaritmo da razão de verossimilhança é linear em relação ao vetor de características $\bf{x}$.
+
+------------------------------------------------------------------------
+
+Considere a função densidade para a distribuição normal multivariada:
+
+```{=tex}
+\begin{align}
+  f(\boldsymbol{x}) = \frac{1}{(2\pi)^{k/2}|\Sigma|^{1/2}} \exp \{ -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu})^\top \Sigma^{-1} (\boldsymbol{x} - \boldsymbol{\mu}) \}
+\end{align}
+```
+A razão de verossimilhanças é dada já simplificada em relação às constantes de normalização por
+
+```{=tex}
+\begin{align}
+  \mathcal{L}(\boldsymbol{x}) &= \frac{p(\boldsymbol{x}|\omega_1)}{p(\boldsymbol{x}|\omega_2)} = \frac{\exp \{ -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu_1})^\top \Sigma^{-1} (\boldsymbol{x} - \boldsymbol{\mu_1}) \}}{\exp \{ -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu_2})^\top \Sigma^{-1} (\boldsymbol{x} - \boldsymbol{\mu_2}) \}} \\
+ \ell(\boldsymbol{x}) &=  -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu_1})^\top \Sigma^{-1} (\boldsymbol{x} - \boldsymbol{\mu_1}) + \frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu_2})^\top \Sigma^{-1} (\boldsymbol{x} - \boldsymbol{\mu_2})\nonumber \\
+ &= -\frac{1}{2} \left( \boldsymbol{x}^\top \Sigma^{-1} \boldsymbol{x} - \boldsymbol{x}^\top \Sigma^{-1} \boldsymbol{\mu_1}  - \boldsymbol{\mu_1}^\top \Sigma^{-1} \boldsymbol{x} +  \boldsymbol{\mu_1}^\top \Sigma^{-1} \boldsymbol{\mu_1} \right) \nonumber \\
+&+ \frac{1}{2} \left( \boldsymbol{x}^\top \Sigma^{-1} \boldsymbol{x} - \boldsymbol{x}^\top \Sigma^{-1} \boldsymbol{\mu_2}  - \boldsymbol{\mu_2}^\top \Sigma^{-1} \boldsymbol{x} +  \boldsymbol{\mu_2}^\top \Sigma^{-1} \boldsymbol{\mu_2} \right) \nonumber \\
+&= \frac{1}{2} \left( \boldsymbol{x}^\top \Sigma^{-1} (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2) + (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)^\top \Sigma^{-1} \boldsymbol{x} + \boldsymbol{\mu_2}^\top \Sigma^{-1} \boldsymbol{\mu_2}  - \boldsymbol{\mu_1}^\top \Sigma^{-1} \boldsymbol{\mu_1}   \right),
+\end{align}
+```
+
+que é linear em relação a $\boldsymbol{x}$.
+
+
+{{< pagebreak >}}
+
+# Questão 5
+
+Pesquise sobre pacotes disponíveis no `R` para realizar análise de discriminantes e classificação. Verifique as regras de decisão utilizadas nestes pacotes. Compare os recursos do R com procedimento em outra linguagens de programação, como `SAS`, `Python`, `Matlab`.
+
+------------------------------------------------------------------------
+
+O pacote MASS, disponível em R, oferece uma variedade de métodos para análise discriminante[^1]:
+
+[^1]: <http://www.sthda.com/english/articles/36-classification-methods-essentials/146-discriminant-analysis-essentials-in-r/>
+
+1.  Análise discriminante linear (LDA): Esta técnica utiliza combinações lineares de preditores para prever a classe de uma observação, assumindo distribuição normal para as variáveis preditoras e igualdade de variâncias entre as classes.
+
+2.  Análise discriminante quadrática (QDA): Mais flexível que a LDA, esta abordagem não assume que a matriz de covariância das classes seja a mesma.
+
+3.  Análise discriminante de mistura (MDA): Neste método, cada classe é considerada como uma mistura gaussiana de subclasses.
+
+4.  Análise discriminante flexível (FDA): Utiliza combinações não-lineares de preditores, como splines, para a classificação.
+
+5.  Análise discriminante regularizada (RDA): Aplica regularização para melhorar a estimativa das matrizes de covariância em situações onde o número de preditores é maior que o de amostras nos dados de treinamento, resultando em uma melhoria na análise discriminante.
+
+Além disso, destaca-se o uso da função `MASS::lda()` que aplica o teorema de Bayes para calcular a probabilidade de cada classe com base nos valores dos preditores. Outro recurso interessante é o pacote `nproc`, que utiliza métodos de classificação de Neyman-Pearson para identificar regiões onde um método é mais eficaz que o outro [@tong2018]. O pacote `Rlda` também é relevante, especialmente para análise de agrupamentos em diferentes tipos de dados, como entradas multinomiais, Bernoulli e binomiais. Esse pacote é especialmente útil para o reconhecimento de padrões não supervisionados, sobretudo para análise de agrupamento de adesão mista de dados categóricos [@albuquerque2019].
+
+No ambiente SAS, está disponível o procedimento `DISCRIM`, que é utilizado para desenvolver um critério discriminante em conjuntos de observações contendo variáveis quantitativas e uma variável de classificação, permitindo assim a classificação de cada observação em grupos específicos[^2].
+
+[^2]: <https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_discrim_sect001.htm>
+
+Quando a distribuição dentro de cada grupo é considerada normal multivariada, emprega-se um método paramétrico para criar uma função discriminante. Essa função, também chamada de critério de classificação, é determinada por meio de uma medida de distância generalizada ao quadrado. O critério de classificação pode ser formulado com base nas matrizes de covariância dentro do grupo (resultando em uma função quadrática) ou na matriz de covariância agrupada (resultando em uma função linear), levando em conta as probabilidades anteriores dos grupos. As informações de calibração podem ser armazenadas em um conjunto de dados especial no SAS, sendo posteriormente aplicadas a outros conjuntos de dados.
+
+Quando não é possível fazer suposições sobre a distribuição dentro de cada grupo, ou quando se presume que a distribuição não é normal multivariada, são utilizados métodos não paramétricos para estimar as densidades específicas do grupo. Esses métodos incluem técnicas como kernel e vizinho mais próximo. O procedimento `DISCRIM` emprega kernels uniformes, normais, Epanechnikov, biweight ou triweight para a estimativa de densidade. As distâncias de Mahalanobis ou Euclidiana podem ser utilizadas para avaliar a proximidade entre observações.
+
+A distância de Mahalanobis pode ser calculada com base na matriz de covariância completa ou na matriz diagonal de variâncias. Com o método -nearest-neighbor, é usada a matriz de covariância agrupada para calcular as distâncias de Mahalanobis. Já com o método de kernel, tanto as matrizes de covariância dentro do grupo quanto a matriz de covariância agrupada podem ser empregadas para esse cálculo. Com as densidades específicas do grupo estimadas e as probabilidades anteriores associadas, é possível avaliar as estimativas de probabilidade posterior de pertencimento ao grupo para cada classe.
+
+A análise discriminante canônica, relacionada à análise de componentes principais e correlação canônica, é uma técnica de redução de dimensão utilizada no `PROC DISCRIM`. Nesse procedimento, são derivadas variáveis canônicas que resumem a variação entre classes de maneira semelhante às componentes principais, resultando em um critério discriminante que é sempre obtido no `PROC DISCRIM`. Para realizar uma análise discriminante canônica sem a utilização do critério discriminante, recomenda-se o uso do procedimento `CANDISC`.
+
+{{< pagebreak >}}
+
+# Referências

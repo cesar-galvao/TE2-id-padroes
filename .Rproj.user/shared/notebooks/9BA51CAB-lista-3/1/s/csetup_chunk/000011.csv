@@ -1,0 +1,8 @@
+"0","#| label: setup"
+"0","#| include: false"
+"0",""
+"0","if (!(""pacman"" %in% installed.packages())){"
+"0","  install.packages(""pacman"")"
+"0","}"
+"0",""
+"0","pacman::p_load(tidyverse, tidymodels, cowplot, MASS, latex2exp, MVN, heplots)"

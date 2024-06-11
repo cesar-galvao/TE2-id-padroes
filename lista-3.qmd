@@ -1,0 +1,684 @@
+---
+title: "Lista 3"
+author: 
+  - César A. Galvão - 190011572
+  - Gabriela Carneiro - 180120816
+  - João Vitor Vasconcelos - 170126064
+lang: pt
+execute:
+  message: false
+  warning: false
+format: 
+  pdf:
+    geometry:
+      - top=30mm
+      - left=30mm
+      - right=30mm
+      - heightrounded
+    code-overflow: wrap
+    df-print: paged
+    documentclass: article
+    fig-pos: H
+    tbl-pos: H
+    cite-method: citeproc
+    papersize: a4paper
+    keep-tex: true
+    mathspec: true
+    toc: true
+    toc-depth: 2
+    include-in-header: 
+       text: |
+         \usepackage{fvextra}
+         \usepackage[auth-lg]{authblk}
+         \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+         \DefineVerbatimEnvironment{OutputCode}{Verbatim}{breaklines,commandchars=\\\{\}}
+bibliography: references.bib
+---
+
+{{< pagebreak >}}
+
+```{r}
+#| label: setup
+#| include: false
+
+if (!("pacman" %in% installed.packages())){
+  install.packages("pacman")
+}
+
+pacman::p_load(tidyverse, tidymodels, cowplot, MASS, latex2exp, MVN, heplots)
+```
+
+# Questão 6
+
+Estudar o texto de Kneusel (2022) sobre o algoritmo Gradiente Descendente[^1] e apresentar um resumo com exemplos em `R`.
+
+[^1]: Ronald T. Kneusel (2022) Math for Deep Learning.
+
+------------------------------------------------------------------------
+
+Gradiente Descendente é uma técnica de otimização fundamental no campo do aprendizado de máquina, usada para minimizar uma função de custo ajustando iterativamente os parâmetros do modelo. Esse algoritmo calcula o gradiente da função de custo e atualiza os parâmetros na direção oposta ao gradiente, visando reduzir o erro.
+
+## Gradiente Descendente
+
+O gradiente é o vetor de derivadas parciais da função de custo em relação a cada parâmetro. A atualização dos parâmetros segue a fórmula:
+
+```{=tex}
+\begin{align}
+  \theta_{\text{novo}} = \theta_{\text{antigo}} - \eta \times \nabla F(\theta_{\text{antigo}})
+\end{align}
+```
+onde $\eta$ é a taxa de aprendizado, e $\nabla F$ representa o gradiente.
+
+Para o código a seguir, considera-se
+
+```{=tex}
+\begin{align}
+  y_i = 2 x_i + \epsilon_i
+\end{align}
+```
+\noindent e o Erro Quadrático Médio (MSE) como função de custo:
+
+```{=tex}
+\begin{align}
+  F(\theta) = \frac{1}{n} \sum\limits_{i=1}^{n} (y_i - \theta x_i)^2
+\end{align}
+```
+\noindent de modo que
+
+```{=tex}
+\begin{align}
+  \nabla F(\theta) = -\frac{2}{n} \sum\limits_{i=1}^{n} (y_i - \theta x_i) x_i \frac{d}{d \theta}.
+\end{align}
+```
+O passo no sentido do gradiente descendente escolhido (*learning rate*) foi de 0.0001 e o algoritmo foi executado por 1000 iterações (*epochs*).
+
+```{r}
+# Definir semente para garantir a reprodutibilidade
+set.seed(123)
+
+# Simulação de dados
+x <- 1:100
+y <- 2 * x + rnorm(100, mean = 0, sd = 10)  # y é uma função linear de x com ruído adicionado
+theta <- runif(1, min = -2, max = 2)  # Inicializar theta aleatoriamente
+learning_rate <- 0.0001  # Definir a taxa de aprendizado
+
+# Função para calcular o gradiente do erro quadrático médio
+mse_gradient <- function(x, y, theta) {
+  gradient <- -2/length(y) * sum((y - theta * x) * x)
+  return(gradient)
+}
+
+# Loop para atualizar o parâmetro theta usando Gradiente Descendente
+for (i in 1:1000) {
+  grad <- mse_gradient(x, y, theta)
+  theta <- theta - learning_rate * grad
+}
+```
+
+```{r}
+#| label: fig-gradiente
+#| fig-cap: Gradiente Descendente para Regressão Linear
+
+# Criar um data frame para a visualização com ggplot2
+data <- data.frame(x, y)
+
+# Visualização do ajuste usando ggplot2
+ggplot(data, aes(x = x, y = y)) +
+  geom_point() +  geom_abline(intercept = 0, slope = theta, color = "red", size = 1) +  labs(x = "Variável Independente (x)", 
+       y = "Variável Dependente (y)") +
+  theme_minimal()
+```
+
+O parâmetro $\theta$ converge para `r round(theta, 4)`, um valor próximo de 2, que é a inclinação real da relação entre $x$ e $y$. A linha vermelha no gráfico representa a linha de regressão ajustada, que mostra como o modelo linear com a inclinação estimada se ajusta aos dados gerados. O resultado ilustra a eficácia do Gradiente Descendente em encontrar a inclinação que minimiza o erro quadrático médio entre as previsões e os valores reais.
+
+## Algoritmo Perceptron
+
+O Algoritmo Perceptron é um classificador binário que ajusta os pesos com base nos erros de classificação.
+
+### Principais Conceitos
+
+-   **Classificação Binária**: O Perceptron é capaz de separar duas classes linearmente separáveis através de uma função de decisão linear.
+-   **Aprendizado Supervisionado**: Utiliza rótulos conhecidos para aprender a fronteira de decisão, ajustando iterativamente os pesos.
+
+### Formulação Matemática
+
+O Perceptron ajusta os pesos $\boldsymbol{w}$ e o viés $b$ usando a regra de atualização:
+
+$$
+\boldsymbol{w} \leftarrow \boldsymbol{w} + \eta (y_i - \hat{y}_i) \boldsymbol{x}_i
+$$ onde $\eta$ é a taxa de aprendizado, $y_i$ é o rótulo verdadeiro, $\hat{y}_i$ é a previsão, e $\boldsymbol{x}_i$ são as características de entrada.
+
+### Exemplo
+
+```{r}
+# Carregar a biblioteca ggplot2
+library(ggplot2)
+
+# Define uma semente aleatória para garantir que os resultados sejam reprodutíveis
+set.seed(42)
+
+# Gera uma matriz 100x2 de números aleatórios normalmente distribuídos
+x <- matrix(rnorm(200), 100, 2)
+
+# Cria um vetor com 100 elementos, sendo os primeiros 50 elementos -1 e os últimos 50 elementos 1
+y <- c(rep(-1, 50), rep(1, 50))
+
+# Aumenta todos os valores nas duas colunas de 'x' para as entradas onde 'y' é 1
+x[y == 1, ] <- x[y == 1, ] + 1
+
+# Converte os arrays 'x' e 'y' em um data frame chamado 'df' e transforma 'y' em um fator
+df <- data.frame(x1 = x[, 1], x2 = x[, 2], class = as.factor(y))
+
+# Inicializa um vetor de pesos com zeros, com um elemento a mais do que o número de colunas em 'x'
+weights <- rep(0, ncol(x) + 1)
+
+# Define a função Perceptron para ajustar os pesos com base nas entradas 'x', 'y', pesos existentes e taxa de aprendizado
+perceptron <- function(x, y, weights, learning_rate = 0.01) {
+  for (i in 1:length(y)) {
+    # Verifica se a classificação atual está correta, ajusta os pesos se estiver errada
+    if (y[i] * (crossprod(weights, c(1, x[i, ]))) <= 0) {
+      weights <- weights + learning_rate * y[i] * c(1, x[i, ])
+    }
+  }
+  return(weights)
+}
+
+# Treina o modelo Perceptron por 10 épocas, atualizando os pesos a cada iteração
+for (epoch in 1:10) {
+  weights <- perceptron(x, y, weights)
+}
+
+# Calcula a inclinação e a interceptação da linha de decisão baseada nos pesos finais
+slope <- -weights[2]/weights[3]
+intercept <- -weights[1]/weights[3]
+```
+
+```{r}
+#| label: fig-perceptron
+#| fig-cap: Classificação do Perceptron
+
+# Configura o gráfico ggplot para 'df', mapeando 'x1' e 'x2' para os eixos x e y, e 'class' para a cor
+ggplot(df, aes(x = x1, y = x2, color = class)) +
+  geom_point() +  # Adiciona pontos ao gráfico para representar as observações
+  geom_abline(slope = slope, intercept = intercept, color = "green", linewidth = 1) +  # Adiciona uma linha de decisão
+  labs(x = "Feature 1", y = "Feature 2") +  # Define os títulos e rótulos dos eixos
+  scale_color_manual(values = c("red", "blue")) +  # Define cores manuais para as classes
+  theme_minimal()  # Aplica um tema minimalista ao gráfico
+```
+
+O Perceptron ajusta uma fronteira de decisão (linha verde) que tenta separar os pontos de dados em duas classes (vermelho e azul). Os pesos são ajustados baseados em erros de classificação, e o resultado visual mostra como a linha foi capaz de separar as duas classes após o treinamento.
+
+O resultado do algoritmo Perceptron inclui:
+
+-   **Modelo de Classificação Treinado**: O Perceptron é um classificador linear binário que aprende a distinguir entre duas classes (-1 e 1 nesse caso). O treinamento ajusta os pesos associados a cada atributo dos dados (e um peso de viés) de modo que o modelo possa corretamente classificar novos exemplos baseado em suas características.
+-   **Pesos Ajustados**: Ao final do treinamento, os pesos representam os parâmetros de um hiperplano que melhor separa as duas classes no espaço de características. Esses pesos determinam como as entradas (características dos dados) são linearmente combinadas para fazer uma previsão de classe.
+-   **Fronteira de Decisão**: No espaço bidimensional do exemplo, essa fronteira é representada por uma linha reta. A posição e orientação dessa linha são diretamente determinadas pelos pesos resultantes do treinamento.
+
+## Critério de Fisher
+
+O Critério de Fisher, ou Análise Discriminante Linear (LDA), é uma técnica que busca maximizar a separação entre diferentes classes enquanto minimiza a dispersão dentro de cada classe. É usado primariamente para reduzir a dimensionalidade dos dados antes da classificação, melhorando assim a eficácia dos modelos de aprendizado de máquina em ambientes de alta dimensionalidade.
+
+### Principais Conceitos
+
+-   **Variância entre as Classes**: Maximiza a distância entre as médias das classes.
+-   **Variância dentro das Classes**: Minimiza a dispersão dos dados dentro de cada classe.
+
+### Formulação Matemática
+
+O vetor de projeção $\mathbf{w}$ é determinado maximizando a razão:
+
+$$
+J(\mathbf{w}) = \frac{\sigma_{\text{entre}}^2}{\sigma_{\text{dentro}}^2}
+$$ onde $\sigma_{\text{entre}}^2$ e $\sigma_{\text{dentro}}^2$ representam, respectivamente, a variância entre as médias das classes e a soma das variâncias dentro de cada classe projetada.
+
+### Exemplo
+
+```{r}
+
+# Filtrar o conjunto de dados iris para excluir a espécie 'virginica'
+iris_subset <- droplevels(iris[iris$Species != "virginica", ])
+
+# Ajustar o modelo LDA ao subconjunto de dados
+model <- lda(Species ~ ., data = iris_subset)
+
+# Obter as projeções LDA usando predict
+projection <- predict(model)$x  # Isto obtém os valores discriminantes diretamente
+
+# Converter projeções e espécies em um dataframe para uso no ggplot
+plot_data <- data.frame(Index = 1:nrow(projection), Projection = projection[,1], Species = iris_subset$Species)
+```
+
+```{r}
+#| label: fig-lda
+#| fig-cap: Projeção LDA com Critério de Fisher
+
+# Criar o gráfico usando ggplot
+ggplot(plot_data, aes(x = Projection, y = Index, color = Species)) +
+  geom_point(alpha = 0.6) +  # Use alpha para ajustar a transparência, se necessário
+  labs(x = "Projection", y = "Index") +
+  scale_color_brewer(palette = "Set1", name = "Species") +
+  theme_minimal()
+```
+
+O gráfico mostra a eficácia da projeção LDA em separar duas espécies de íris, utilizando o Critério de Fisher para maximizar a distância entre as classes.
+
+## Critério de Mínimos Quadrados
+
+O Critério de Mínimos Quadrados é usado para estimar os coeficientes de um modelo de regressão. O objetivo é minimizar a soma dos quadrados das diferenças entre os valores observados e os valores estimados pelo modelo, garantindo assim a melhor adequação possível dos dados ao modelo encontrado.
+
+### Principais Conceitos
+
+-   **Erro Quadrático**: Mede a diferença ao quadrado entre os valores observados e os preditos pelo modelo.
+-   **Ajuste de Modelo**: O critério busca parâmetros que reduzam ao mínimo o erro quadrático total, refletindo a melhor previsão possível dada a variabilidade dos dados.
+
+### Formulação Matemática
+
+A estimativa dos coeficientes do modelo de regressão é realizada através da solução da equação:
+
+$$
+\beta = (\mathbf{X}^\top\mathbf{X})^{-1} \mathbf{X}^\top\mathbf{y}
+$$ onde $\mathbf{X}$ representa a matriz de dados (com uma coluna adicional de uns para o intercepto), $\beta$ são os coeficientes a serem estimados, e $\mathbf{y}$ é o vetor de variáveis dependentes.
+
+### Exemplo
+
+```{r}
+# Gerar 100 números aleatórios normalmente distribuídos como variável independente 'x'
+x <- rnorm(100)
+
+# Criar a variável dependente 'y' como uma função linear de 'x' mais ruído gaussiano
+y <- 2 * x + rnorm(100)
+
+# Criar um data frame a partir de x e y
+data <- data.frame(x, y)
+
+# Ajustar um modelo de regressão linear onde 'y' é predito por 'x'
+model <- lm(y ~ x, data = data)
+
+# Criar um gráfico de dispersão usando ggplot
+MQ <- ggplot(data, aes(x = x, y = y)) +
+  geom_point() +  # Adicionar pontos ao gráfico
+  geom_smooth(method = "lm", se = FALSE, color = "red", size = 1) +  # Adicionar linha de regressão
+  labs(title = "Regressão Linear com Mínimos Quadrados", x = "Variável Independente (x)", y = "Variável Dependente (y)") +
+  theme_minimal()  # Utilizar um tema minimalista para o gráfico
+
+# Exibir o gráfico
+print(MQ)
+```
+
+A linha vermelha mostra a melhor ajuste linear, minimizando as diferenças quadradas entre os valores observados e preditos, demonstrando a precisão do modelo na estimativa da relação entre as variáveis.
+
+{{< pagebreak >}}
+
+# Questão 7
+
+Estudar e apresentar um exemplo utilizando as notas sobre Perceptron no R descritas em <https://rpubs.com/FaiHas/197581>.
+
+------------------------------------------------------------------------
+
+O autor apresenta o algoritmo de Frank Rosenblatt para classificação. O exemplo apresentado considera uma base de dados contendo uma lista de pesos e rótulos indicando a espécie de íris do banco de dados `datasets::iris`. O perceptron recebe a base de dados e "aprende" a identificar as classes corretamente com base nas características da observação.
+
+A base de dados `iris` original é composta por 150 observações de 4 variáveis (comprimento e largura da sépala e pétala) e 1 variável de classe (espécie da íris). O autor utiliza um subconjunto de 100 observações aleatórias da base de dados e cria um vetor de rótulos binários para as espécies "setosa" e "versicolor".
+
+ 
+
+```{r}
+#| label: tbl-subsetiris
+#| tbl-cap: Subconjunto de Dados Iris
+
+irissubdf <- iris[1:100, c(1, 3, 5)]
+names(irissubdf) <- c("sepal", "petal", "species")
+head(irissubdf) %>%
+  knitr::kable()
+```
+
+ 
+
+O subconjunto de dados é exibido na @fig-plotsubsetiris a seguir.
+
+ 
+
+```{r}
+#| label: fig-plotsubsetiris
+#| fig-cap: Espécies em função de comprimento de sépala e pétala
+
+ggplot(irissubdf, aes(x = sepal, y = petal,
+                      colour=species, shape= species)) + 
+        geom_point(size = 3) +
+        labs(x = "Comp. Sépala", y = "Comp. Pétala")+
+  theme_bw()+
+  theme(legend.title = element_blank())
+```
+
+ 
+
+Em seguida, o autor adiciona uma quarta variável ao subconjunto de dados representando o rótulo. Se a espécie for "setosa", o rótulo é 1; caso contrário, o rótulo é -1. Em seguida, as características são atribuídas ao objeto `x` e os rótulos ao objeto `y`.
+
+ 
+
+```{r}
+#| label: rotulos iris
+
+irissubdf <- irissubdf %>%
+  mutate(label = case_when(
+    species == "setosa" ~ 1,
+    species == "versicolor" ~ -1
+  ))
+
+x <- irissubdf %>% dplyr::select(sepal, petal)
+y <- irissubdf %>% dplyr::select(label) %>% pull()
+```
+
+ 
+
+Finalmente, o algoritmo perceptron é implementado na mesma forma que foi apresentado nas notas de aula. A função que o executa recebe quatro argumentos: dados, rótulos, taxa de aprendizagem e número de iterações.
+
+A função é inicializada com um vetor de pesos $\boldsymbol{w} = (w_1 = 0, w_2 = 0, b = 0)$ e um vetor nulo de erros do mesmo tamanho que o número de iterações. O algoritmo percorre o conjunto de dados e ajusta os pesos de acordo com a regra de atualização do perceptron em dois laços:
+
+-   o primeiro laço percorre o número de iterações;
+-   o segundo laço percorre o número de observações em cada iteração.
+
+No algoritmo, $z = \boldsymbol{w}^\top\boldsymbol{x} + b$ é a previsão da observação com os pesos correntes, porém é feito elemento a elemento. Se $z < 0$, a previsão é -1; caso contrário, a previsão é 1. Os pesos são atualizados da seguinte forma para cada observação $i$:
+
+$$
+  \boldsymbol{w}^{(t)} \leftarrow \boldsymbol{w}^{(t-1)} + \eta (y_i - \hat{y}_i) \begin{bmatrix} 1 \\ \boldsymbol{x}_i \end{bmatrix}
+$$
+
+\noindent em que $\eta$ é a taxa de aprendizagem. Nota-se que o peso *não* é atualizado se a classificação for correta. O vetor
+
+Depois de percorrer a base de dados completa em cada iteração, o erro é atualizado se a classificação for incorreta. O vetor final de erros da função indica quantas classificações erradas foram feitas em cada iteração.
+
+Finalmente, uma pequena alteração foi feita na função para que seja retornada uma lista com dois elementos: o vetor de pesos e o vetor de erros.
+
+ 
+
+```{r}
+#| label: function-perceptronalgoritmo
+
+perceptron <- function(x, y, eta, niter) {
+        
+        # initialize weight vector
+        weight <- rep(0, dim(x)[2] + 1)
+        errors <- rep(0, niter)
+        
+        
+        # loop over number of epochs niter
+        for (jj in 1:niter) {
+                
+                # loop through training data set
+                for (ii in 1:length(y)) {
+                        
+                        # Predict binary label using Heaviside activation 
+                        # function
+                        z <- sum(weight[2:length(weight)] * 
+                                         as.numeric(x[ii, ])) + weight[1]
+                        if(z < 0) {
+                                ypred <- -1
+                        } else {
+                                ypred <- 1
+                        }
+                        
+                        # Change weight - the formula doesn't do anything 
+                        # if the predicted value is correct
+                        weightdiff <- eta * (y[ii] - ypred) * 
+                                c(1, as.numeric(x[ii, ]))
+                        weight <- weight + weightdiff
+                        
+                        # Update error function
+                        if ((y[ii] - ypred) != 0.0) {
+                                errors[jj] <- errors[jj] + 1
+                        }
+                        
+                }
+        }
+        
+        # weight to decide between the two species 
+        return(list(
+          w = weight,
+          erros = errors)
+          )
+}
+```
+
+ 
+
+Com o subconjunto escolhido pelo autor, obtemos o vetor de pesos
+
+```{r}
+#| label: pesos-iris
+
+pesos_iris<- perceptron(x, y, 1, 10)
+```
+
+```{=tex}
+\begin{align}
+  \boldsymbol{w} = \begin{bmatrix} `r pesos_iris$w[1]` \\ `r pesos_iris$w[2]` \end{bmatrix} \quad b = `r pesos_iris$w[3]`
+ \end{align}
+```
+\noindent e a quantidade de erros por iterações, apresentada na @fig-errosperceptron a seguir, um pouco diferente do que o autor exibe.
+
+ 
+
+```{r}
+#| label: fig-errosperceptron
+#| fig-cap: Erros por Iterações do algoritmo Perceptron
+
+ggplot(data = as_tibble(pesos_iris$erros), aes(x = 1:length(pesos_iris$erros), y = pesos_iris$erros)) +
+  geom_line(color = "red") +
+  labs(x = "Iterações", y = "Erros") +
+  theme_bw() +
+  theme(
+    panel.grid.major.x = element_blank(), # Remove major x grids
+    panel.grid.minor.x = element_blank(), # Remove minor x grids
+    panel.grid.minor.y = element_blank()  # Remove minor y grids
+  )
+```
+
+ 
+
+O autor finalmente tece comentários sobre classificação multiclasse usando o perceptron. Trata-se de um algoritmo com baixa capacidade de representação, sendo adequado apenas para problemas de classificação binária, portanto seria necessário tanto mais características das observações quanto procedimentos de classificação do tipo Classe 1 *versus* Demais.
+
+Algo que se é necessário destacar também é que, enquanto o erro de classificação convergiu para zero no exemplo apresentado, isso não é garantido para todos os problemas. Com as três espécies, conforme a @fig-iris3species a seguir, duas não são linearmente separáveis entre si, de modo que o erro converge para um valor superior a zero para esta configuração do algoritmo.
+
+```{r}
+#| label: fig-iris3species
+#| fig-cap: Espécies em função de comprimento de sépala e pétala usando a base iris completa
+
+irisdata <- iris[, c(1, 3, 5)]
+names(irisdata) <- c("sepal", "petal", "species")
+
+ggplot(irisdata, aes(x = sepal, y = petal,
+                      colour=species, shape= species)) + 
+        geom_point(size = 3) +
+        labs(x = "Comp. Sépala", y = "Comp. Pétala")+
+  theme_bw()+
+  theme(legend.title = element_blank())
+```
+
+{{< pagebreak >}}
+
+# Questão 8
+
+a)  Estudar e apresentar a função perceptron do pacote `mlpack` do R.
+b)  Verificar se existe material adicional (instruções em sites, pacotes, artigos) sobre classificação utilizando o algoritmo perceptron no R e apresentar exemplos.
+
+------------------------------------------------------------------------
+
+## item a)
+
+De acordo com a documentação da função `mlpack::perceptron()`[^2],
+
+[^2]: <https://www.mlpack.org/doc/mlpack-git/r_documentation.html#perceptron>
+
+*"Este programa implementa um perceptron, que é uma rede neural de nível único. O perceptron faz suas previsões com base em uma função preditora linear que combina um conjunto de pesos com o vetor de características. A regra de aprendizado do perceptron é capaz de convergir, dadas iterações suficientes (especificadas usando o parâmetro max_iterations), se os dados fornecidos forem linearmente separáveis. O perceptron é parametrizado por uma matriz de vetores de peso que denotam os pesos numéricos da rede neural.*
+
+*Este programa permite carregar um perceptron a partir de um modelo (via o parâmetro input_model) ou treinar um perceptron com dados de treinamento (via o parâmetro training), ou ambas as coisas ao mesmo tempo. Além disso, este programa permite a classificação em um conjunto de dados de teste (via o parâmetro test) e os resultados da classificação no conjunto de teste podem ser salvos com o parâmetro de saída predictions. O modelo de perceptron pode ser salvo com o parâmetro de saída output_model."*
+
+São 7 os possíveis argumentos de entrada:
+
+-   **check_input_matrices**
+    -   *tipo*: lógico
+    -   *descrição*: Se especificado, a matriz de entrada é verificada para valores NaN e inf; uma exceção é lançada se algum for encontrado.
+    -   *padrão*: FALSE
+-   **input_model**
+    -   *tipo*: PerceptronModel
+    -   *descrição*: Modelo de perceptron de entrada.
+    -   *padrão*: NA
+-   **labels**
+    -   *tipo*: vetor de inteiros
+    -   *descrição*: Uma matriz contendo os rótulos para o conjunto de treinamento.
+    -   *padrão*: matrix(integer(), 0, 0)
+-   **max_iterations**
+    -   *tipo*: inteiro
+    -   *descrição*: O número máximo de iterações que o perceptron deve executar.
+    -   *padrão*: 1000
+-   **test**
+    -   *tipo*: matriz numérica
+    -   *descrição*: Uma matriz contendo o conjunto de teste.
+    -   *padrão*: matrix(numeric(), 0, 0)
+-   **training**
+    -   *tipo*: matriz numérica
+    -   *descrição*: Uma matriz contendo o conjunto de treinamento.
+    -   *padrão*: matrix(numeric(), 0, 0)
+-   **verbose**
+    -   *tipo*: lógico
+    -   *descrição*: Exibir mensagens informativas e a lista completa de parâmetros e temporizadores no final da execução.
+    -   *padrão*: FALSE
+
+ 
+
+Os resultados são apresentados em uma lista com os seguintes elementos:
+
+-   **output**
+    -   *tipo*: vetor de inteiros
+    -   *descrição*: A matriz na qual os rótulos previstos para o conjunto de teste serão escritos.
+-   **output_model**
+    -   *tipo*: PerceptronModel
+    -   *descrição*: Saída para o modelo de perceptron treinado.
+-   **predictions**
+    -   *tipo*: vetor de inteiros
+    -   *descrição*: A matriz na qual os rótulos previstos para o conjunto de teste serão escritos.
+
+ 
+
+## item b)
+
+Enquanto o próprio [mlpack.org](https://www.mlpack.org/doc/mlpack-git/r_documentation.html#perceptron) já traz a documentaçào da função, que é a mesma do CRAN, os próprios autores têm artigos publicados sobre a elaboração do pacote e seu desempenho [@edel2014automatic; @curtin2017designing].
+
+No entanto, outros materiais, inclusive videos do YouTube, não foram identificados. Em vez disso, os resultados apresentam tutoriais e teoria acerca do *multilayer perceptron* --- que é a própria Deep Learning.
+
+{{< pagebreak >}}
+
+# Questão 9 - Critério de Fisher
+
+A Análise Discriminante Linear (*Linear Discriminant Analysis* -- LDA) pode ser considerada uma extensão do critério de Fisher para reconhecimento de padrões, sendo esse um método estatístico que busca encontrar uma combinação linear dos recursos que melhor discrimina entre duas ou mais classes.
+
+A utilização dessa técnica no `R` tem suas vantagens pela facilidade com a qual pode ser implementada e a versatilidade ao se integrar com outras funções estatísticas do R, mas pode acabar sofrendo com conjuntos de dados muito grandes ou necessidades computacionais muito altas.
+
+## Exemplo
+
+A seguir temos um exemplo da implementação de LDA no banco de dados Iris, composto classificações de 3 espécies de flores e medidas em centímetros das variáveis comprimento e largura da sépala e comprimento e largura da pétala.
+
+```{r}
+#| label: modelo-lda
+
+data(iris)
+dados <- iris
+
+modelo_discriminante <- lda( Species ~ Sepal.Length +Sepal.Width+ Petal.Length + Petal.Width, data = dados )
+
+data.predic <-predict(modelo_discriminante,newdata = dados[,1:4])$class
+```
+
+A @tbl-lda a seguir apresenta a quantidade de classificações corretas e a quantidade de classificações erradas a partir do nosso modelo ajustado.
+
+```{r}
+#| label: tbl-lda
+#| tbl-cap: Tabela de Classificações Corretas e Incorretas do LDA
+
+table(data.predic, dados[,5]) %>%
+  knitr::kable()
+```
+
+ 
+
+A @fig-ldairis a seguir nos mostra como, a partir dos Discriminates lineares estimados do nosso modelo LDA, as divisões de classes foram feitas. O eixo LDA1 representa a direção da máxima separação entre as classes, enquanto o eixo LDA2 representa a direção da segunda maior separação.
+
+O diagrama de dispersão demonstra uma clara separação entre as três classes de flores de íris. As flores setosa estão agrupadas no canto superior direito do gráfico, as flores versicolor e flores virginica estão agrupadas no canto inferior esquerdo distribuídas entre os dois aglomerados. As flores setosa são as mais bem agrupadas, indicando menor variabilidade dentro dessa classe. As flores versicolor e virgínica estão mais espalhadas, sugerindo maior variabilidade dentro dessas duas classes
+
+O ponto marcado por X em cada classe de plantas indica a sua média geral. Assim,
+
+-   *Setosa*: indica que a sua média tem um valor LDA1 positivo e um valor LDA2 negativo tendo a maior diferença em relação à média geral entre as três classes.
+-   *Virginica*: indica que a sua média tem um valor LDA1 negativo e um valor LDA2 positivo tendo a segunda maior diferença em relação à média geral entre as três classes.
+-   *Versicolor*: indica que a sua média tem um valor negativo tanto para LD1 quanto para LD2, mas perto de 0 tendo a menor diferença em relaçao a média geral.
+
+ 
+
+```{r}
+#| label: fig-ldairis
+#| fig-cap: Gráfico de Classificação do LDA para o Conjunto de Dados Iris
+#| fig-height: 4.5
+
+# Obter as predições do modelo LDA
+lda_pred <- predict(modelo_discriminante)
+
+# Adicionar as projeções ao dataframe original
+iris$LD1 <- lda_pred$x[,1]
+iris$LD2 <- lda_pred$x[,2]
+
+# Definir cores para as espécies
+species_colors <- c("setosa" = "red", "versicolor" = "blue", "virginica" = "green")
+
+# Plotar as amostras projetadas nas componentes discriminantes
+plot(iris$LD1, iris$LD2, col = species_colors[iris$Species], pch = 16, xlab = "LD1", ylab = "LD2")
+
+# Adicionar a legenda ao gráfico
+legend("topright", legend = levels(iris$Species), col = c("red", "blue", "green"), pch = 16)
+
+# Calcular as médias das projeções das classes
+class_means <- aggregate(cbind(LD1, LD2) ~ Species, data = iris, FUN = mean)
+
+# Adicionar pontos representando as médias das classes
+points(class_means$LD1, class_means$LD2, pch = 4, cex = 2, lwd = 2, col = "black")
+
+# Adicionar linhas de separação (limiares) no gráfico
+abline(v = mean(class_means$LD1), col = "black", lty = 2)  # LD1
+abline(h = mean(class_means$LD2), col = "black", lty = 2)  # LD2
+```
+
+{{< pagebreak >}}
+
+# Questão 10 - Critério de Minimos Quadrados
+
+No R, a utilização do critério de Mínimos Quadrados pode ser exemplificada por meio de regressão linear e modelos lineares generalizados, utilizando as funções lm() e glm(), respectivamente. A implementação deste critério no R oferece várias vantagens, incluindo uma ampla gama de funções que o utilizam como base, facilidade de uso devido à sintaxe intuitiva e uma vasta comunidade que compartilha informações e recursos sobre essas implementações. Contudo, assim como o critério de Fisher, o critério de Mínimos Quadrados enfrenta desafios, como dificuldade em lidar com conjuntos de dados muito grandes, questões de desempenho e limitações de memória computacional .
+
+## Exemplo
+
+Vamos aplicar uma regressão logística usando o pacote stats. Primeiramente, ajustaremos uma regressão linear simples com $x_1$ e $x_2$ sendo variáveis simuladas de uma distribuição normal com médias 2 e 3, respectivamente, e $y$ sendo uma combinação de $x_1$ e $x_2$ com uma distribuição normal de média 0, posteriormente transformada em uma variável binária. Embora este problema seja mais adequado para uma regressão logística, usaremos este exemplo para ilustrar o critério de Mínimos Quadrados.
+
+```{r}
+# Gerar dados de exemplo
+set.seed(123)
+n <- 100
+x1 <- rnorm(n, mean = 2, sd = 1)
+x2 <- rnorm(n, mean = 3, sd = 1)
+y <- ifelse(x1 + x2 + rnorm(n) > 5, 1, 0)
+dados <- data.frame(x1, x2, y)
+
+# Ajustar o modelo de regressão linear
+modelo_linear <- lm(y ~ x1 + x2, data = dados)
+summary(modelo_linear)
+# Fazer previsões
+probabilidades <- predict(modelo_linear,newdata = dados, type = "response")
+
+# Transformar as probabilidades em classes binárias
+predicoes <- ifelse(probabilidades > 0.7, 1, 0)
+
+# Avaliar a precisão
+precisao <- mean(predicoes == dados$y)
+```
+
+Assim calculamos a precisão comparando as previsões com as classes verdadeiras, obtendo um grau de precisão de `r precisao`.
+
+{{< pagebreak >}}
+
+# Referências

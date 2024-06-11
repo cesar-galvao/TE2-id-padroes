@@ -1,0 +1,384 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  a4paperpaper,
+]{article}
+
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \ifXeTeX
+    \usepackage{mathspec} % this also loads fontspec
+  \else
+    \usepackage{unicode-math} % this also loads fontspec
+  \fi
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else  
+    % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[top=30mm,left=30mm,right=30mm,heightrounded]{geometry}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+% Make \paragraph and \subparagraph free-standing
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{241,243,245}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.40,0.45,0.13}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\ExtensionTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.28,0.35,0.67}{#1}}
+\newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.46,0.62}{#1}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\NormalTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.07,0.07,0.07}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+\usepackage{fvextra}
+\usepackage{bbm}
+\usepackage[auth-lg]{authblk}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+\DefineVerbatimEnvironment{OutputCode}{Verbatim}{breaklines,commandchars=\\\{\}}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Índice}
+\else
+  \newcommand\contentsname{Índice}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{Lista de Figuras}
+\else
+  \newcommand\listfigurename{Lista de Figuras}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{Lista de Tabelas}
+\else
+  \newcommand\listtablename{Lista de Tabelas}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figura}
+\else
+  \newcommand\figurename{Figura}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Tabela}
+\else
+  \newcommand\tablename{Tabela}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listagem}
+\newcommand*\listoflistings{\listof{codelisting}{Lista de Listagens}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\ifLuaTeX
+\usepackage[bidi=basic]{babel}
+\else
+\usepackage[bidi=default]{babel}
+\fi
+\babelprovide[main,import]{portuguese}
+% get rid of language-specific shorthands (see #6817):
+\let\LanguageShortHands\languageshorthands
+\def\languageshorthands#1{}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Lista 4},
+  pdfauthor={César A. Galvão - 190011572},
+  pdflang={pt},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Lista 4}
+\author{César A. Galvão - 190011572}
+\date{}
+
+\begin{document}
+\maketitle
+
+\renewcommand*\contentsname{Índice}
+{
+\hypersetup{linkcolor=}
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\newpage{}
+
+\section{Questão 11}\label{questuxe3o-11}
+
+Pesquisar funções disponíveis em pacotes R para classificação utilizando
+a função logística. Apresentar um pequeno exemplo do uso das funções.
+Destacar vantagens e desvantagens em relação aos pacotes de Modelos
+Lineares Generalizados apresentados em aula.
+
+Exemplos de pacotes para classificação no R: \texttt{caret},
+\texttt{class}, \texttt{mlpack.}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+~
+
+A seguir são apresentadas as técnicas utilizadas em sala de aula e as
+funções dos pacotes \texttt{caret}. Não foi possível instalar o pacote
+\texttt{mlpack} e o pacote \texttt{class} não compreende funções para
+regressão logística.
+
+A regressão logística é um Modelo Linear Generalizado, que pode ser
+descrito como
+
+\[
+g\left[ E(Y_i) \right] = \beta_0 + \beta_1 X_{1i} + \ldots + \beta_p X_{pi}, \quad Y_i \overset{i.i.d.}{\sim} FE\left( g\left[ E(Y_i) \right], \sigma^2 \right),
+\] ~
+
+\noindent em que \(g\) é a função de ligação sobre o preditor linear
+\(g\left[ E(Y_i) \right] = \mathbf{X}\boldsymbol{\beta}\). A função de
+ligação mais comum para o modelo logístico é a função logit, dada por
+\(g(\pi) = \log\left( \frac{\pi}{1-\pi} \right)\),
+\(\pi_i = P(Y_i = 1 | \mathbf{X} = \mathbf{x}_i)\), e considera-se
+\(Y_i \sim \text{Bernoulli}\left( p(\mathbf{x}|\omega_1) \right)\).
+
+No contexto de classificação binária, temos que
+
+\[
+\frac{p(\mathbf{x}|\omega_1)}{1-p(\mathbf{x}|\omega_1)} = \frac{p(\mathbf{x}|\omega_1)}{p(\mathbf{x}|\omega_2)} = \exp\left( \mathbf{X}\boldsymbol{\beta} \right),
+\] ~
+
+\noindent considerando
+\(\mathbf{X} = (\mathbbm{1}^\top, \mathbf{X}^*)\), \(\mathbf{X}^*\) a
+matriz de covariáveis.
+
+A decisão de alocação de \(\mathbf{x}_i\) a \(\omega_1\) ocorre se
+\(p(\mathbf{x}|\omega_1)> k\), constante que comumente é \(0,5\).
+
+~
+
+Os modelos apresentados em aula compreendem regressão logística,
+múltipla, politômica e politômica ordenada. Para isso, diversos pacotes
+são utilizados como \texttt{stats}, \texttt{mlpack} e \texttt{VGAM}.
+
+Para os modelos dicotômicos, são apresentados resultados de seleção de
+variáveis e medidas diagnósticas como medidas de influências, qualidade
+de ajuste com \(G^2\), razão de verossimilhança e teste de Hosmer e
+Lemeshow.
+
+Enquanto a implementação via ferramentas do pacote \texttt{stats} seja
+factível, o pacote \texttt{caret} apresenta um \emph{framework}
+consistente para o fluxo de modelagem.
+
+Por exemplo, o bloco a seguir apresenta a partição de uma base de dados
+em treino e teste com 80\% dos dados destinados ao treino. O ajuste do
+modelo e a matriz de confusão são realizados funções do próprio pacote,
+mas é utilizado o \texttt{predict()} genérico do pacote \texttt{stats}:
+
+~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data}\NormalTok{(iris)}
+
+\NormalTok{iris}\SpecialCharTok{$}\NormalTok{Class }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(iris}\SpecialCharTok{$}\NormalTok{Species }\SpecialCharTok{==} \StringTok{"versicolor"}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{trainIndex }\OtherTok{\textless{}{-}} \FunctionTok{createDataPartition}\NormalTok{(iris}\SpecialCharTok{$}\NormalTok{Class, }\AttributeTok{p =}\NormalTok{ .}\DecValTok{8}\NormalTok{, }\AttributeTok{list =} \ConstantTok{FALSE}\NormalTok{, }\AttributeTok{times =} \DecValTok{1}\NormalTok{)}
+\NormalTok{trainData }\OtherTok{\textless{}{-}}\NormalTok{ iris[trainIndex, ]}
+\NormalTok{testData }\OtherTok{\textless{}{-}}\NormalTok{ iris[}\SpecialCharTok{{-}}\NormalTok{trainIndex, ]}
+\end{Highlighting}
+\end{Shaded}
+
+~
+
+Uma etapa simples de seleção de variáveis é exemplificada no bloco a
+seguir. A função \texttt{rfeControl} define como será feita a validação
+--- aqui é feita validação cruzada com 10 partições da base de dados com
+tamanhos similares.
+
+~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{control }\OtherTok{\textless{}{-}} \FunctionTok{trainControl}\NormalTok{(}\AttributeTok{method =} \StringTok{"cv"}\NormalTok{, }\AttributeTok{number =} \DecValTok{10}\NormalTok{)}
+
+\CommentTok{\# Train logistic regression model}
+\NormalTok{logistic\_model }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}
+\NormalTok{  Class }\SpecialCharTok{\textasciitilde{}}\NormalTok{ .,                            }\CommentTok{\# Formula for the model}
+  \AttributeTok{data =}\NormalTok{ trainData,                     }\CommentTok{\# Training data}
+  \AttributeTok{method =} \StringTok{"glm"}\NormalTok{,                       }\CommentTok{\# Method: Generalized Linear Model}
+  \AttributeTok{family =} \StringTok{"binomial"}\NormalTok{,                  }\CommentTok{\# Family: Binomial (logistic regression)}
+  \AttributeTok{trControl =}\NormalTok{ control                   }\CommentTok{\# Cross{-}validation control parameters}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+~
+
+Os coeficientes, seus desvios e significâncias individuais são dados a
+seguir:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{coefficients }\OtherTok{\textless{}{-}} \FunctionTok{summary}\NormalTok{(logistic\_model}\SpecialCharTok{$}\NormalTok{finalModel)}\SpecialCharTok{$}\NormalTok{coefficients}
+\FunctionTok{print}\NormalTok{(coefficients)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+                       Estimate Std. Error       z value  Pr(>|z|)
+(Intercept)       -2.656607e+01   419598.9 -6.331301e-05 0.9999495
+Sepal.Length       7.255362e-12   104971.0  6.911776e-17 1.0000000
+Sepal.Width       -5.746443e-12   119016.7 -4.828264e-17 1.0000000
+Petal.Length      -8.271818e-12   121523.0 -6.806794e-17 1.0000000
+Petal.Width       -1.904911e-12   187285.1 -1.017118e-17 1.0000000
+Speciesversicolor  5.313214e+01   312446.2  1.700521e-04 0.9998643
+Speciesvirginica   2.286765e-11   430478.6  5.312147e-17 1.0000000
+\end{verbatim}
+
+~
+
+Usando o mesmo pacote, a seleção de variáveis poderia ser feita da
+seguinte forma, utilizando o método de seleção
+\texttt{recursive\ feature\ elimination}:
+
+~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ctrl }\OtherTok{\textless{}{-}} \FunctionTok{rfeControl}\NormalTok{(}\AttributeTok{functions =}\NormalTok{ rfFuncs, }\AttributeTok{method =} \StringTok{"cv"}\NormalTok{, }\AttributeTok{number =} \DecValTok{10}\NormalTok{)}
+
+\NormalTok{rfe\_model }\OtherTok{\textless{}{-}} \FunctionTok{rfe}\NormalTok{(}
+\NormalTok{  dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(trainData, }\SpecialCharTok{{-}}\NormalTok{Species, }\SpecialCharTok{{-}}\NormalTok{Class),  }
+\NormalTok{  trainData}\SpecialCharTok{$}\NormalTok{Class,                      }
+  \AttributeTok{sizes =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{),                       }
+  \AttributeTok{rfeControl =}\NormalTok{ ctrl                    }
+\NormalTok{)}
+
+\NormalTok{rfe\_model}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+
+Recursive feature selection
+
+Outer resampling method: Cross-Validated (10 fold) 
+
+Resampling performance over subset size:
+
+ Variables   RMSE Rsquared     MAE  RMSESD RsquaredSD   MAESD Selected
+         1 0.2206   0.7447 0.09050 0.13513     0.2198 0.06772         
+         2 0.1541   0.8505 0.05990 0.11741     0.1693 0.05415        *
+         3 0.1687   0.8550 0.08088 0.09827     0.1550 0.04936         
+         4 0.1829   0.8366 0.10219 0.08731     0.1332 0.05308         
+
+The top 2 variables (out of 2):
+   Petal.Length, Petal.Width
+\end{verbatim}
+
+
+
+\end{document}

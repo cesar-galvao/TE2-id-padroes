@@ -1,0 +1,47 @@
+"0","# Train logistic regression model
+logistic_model <- train(
+  Class ~ .,                            # Formula for the model
+  data = trainData,                     # Training data
+  method = ""glm"",                       # Method: Generalized Linear Model
+  family = ""binomial"",                  # Family: Binomial (logistic regression)
+  trControl = control                   # Cross-validation control parameters
+)
+"
+"2","Warning in train.default(x, y, weights = w, ...) :"
+"2","
+ "
+"2"," You are trying to do regression and your outcome only has two possible values Are you trying to do classification? If so, use a 2 level factor as your outcome column.
+"
+"2","Warning:"
+"2"," glm.fit: algorithm did not converge
+"
+"2","Warning:"
+"2"," glm.fit: algorithm did not converge
+"
+"2","Warning:"
+"2"," glm.fit: algorithm did not converge
+"
+"2","Warning:"
+"2"," glm.fit: algorithm did not converge
+"
+"2","Warning:"
+"2"," glm.fit: algorithm did not converge
+"
+"2","Warning:"
+"2"," glm.fit: algorithm did not converge
+"
+"2","Warning:"
+"2"," glm.fit: algorithm did not converge
+"
+"2","Warning:"
+"2"," glm.fit: algorithm did not converge
+"
+"2","Warning:"
+"2"," glm.fit: algorithm did not converge
+"
+"2","Warning:"
+"2"," glm.fit: algorithm did not converge
+"
+"2","Warning:"
+"2"," glm.fit: algorithm did not converge
+"

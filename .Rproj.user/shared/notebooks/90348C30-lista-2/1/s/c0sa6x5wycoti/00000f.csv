@@ -1,0 +1,5 @@
+"0","#| label: fig-qqchisq2"
+"0","#| fig-cap: QQ-plot para $\omega_2$ em relação à distribuição $\chi^2$."
+"0","#| echo: false"
+"0",""
+"0","heplots::cqplot(omega2)"
