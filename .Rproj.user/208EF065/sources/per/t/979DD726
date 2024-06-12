@@ -1,6 +1,6 @@
 {
     "id": "979DD726",
-    "path": "~/Documents/UnB/10 semestre/Topicos 2 - Machine Learning/TE2-Patterns/lista-5.qmd",
+    "path": "~/Documents/UnB/10 semestre/Topicos 2 - Machine Learning/TE2-id-padroes/lista-5.qmd",
     "project_path": "lista-5.qmd",
     "type": "quarto_markdown",
     "hash": "3870781319",
@@ -12,9 +12,9 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "446,0",
-        "scrollLine": "422",
-        "last_setup_crc32": "7bfb588bd05ea73e",
+        "cursorPosition": "296,12",
+        "scrollLine": "291",
+        "last_setup_crc32": "",
         "rmdVisualMode": "false",
         "rmdVisualWrapConfigured": "true",
         "docOutlineVisible": "0",
