@@ -1,9 +1,9 @@
 {
     "id": "979DD726",
-    "path": "~/Documents/UnB/10 semestre/Topicos 2 - Machine Learning/TE2-id-padroes/lista-5.qmd",
-    "project_path": "lista-5.qmd",
+    "path": "~/Documents/UnB/10 semestre/Topicos 2 - Machine Learning/TE2-id-padroes/lista-6.qmd",
+    "project_path": "lista-6.qmd",
     "type": "quarto_markdown",
-    "hash": "3870781319",
+    "hash": "4175404831",
     "contents": "",
     "dirty": false,
     "created": 1715958880826.0,
@@ -12,9 +12,9 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "296,12",
-        "scrollLine": "291",
-        "last_setup_crc32": "",
+        "cursorPosition": "371,31",
+        "scrollLine": "361",
+        "last_setup_crc32": "a660394c597ff6ab",
         "rmdVisualMode": "false",
         "rmdVisualWrapConfigured": "true",
         "docOutlineVisible": "0",
@@ -22,11 +22,11 @@
         "rmdVisualCollapsedChunks": ""
     },
     "folds": "",
-    "lastKnownWriteTime": 1718123957,
+    "lastKnownWriteTime": 1718825212,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1718123957734,
+    "last_content_update": 1718825212400,
     "read_only": false,
     "read_only_alternatives": []
 }

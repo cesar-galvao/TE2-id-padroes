@@ -302,6 +302,374 @@ entre os planos}
 
 ~
 
+\subsection{Questão 2}\label{questuxe3o-2}
+
+We have seen that in \(p = 2\) dimensions, a linear decision boundary
+takes the form \(\beta_0 +\beta_1X_1 +\beta_2X_2 = 0\). We now
+investigate a non-linear decision boundary.
+
+\subsubsection{Item a)}\label{item-a-1}
+
+Sketch the curve \((1 + X_1)^2 + (2 − X_2)^2 = 4\)
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+A Figura~\ref{fig-q2a} mostra a elipse definida pela equação
+\((1 + X_1)^2 + (2 − X_2)^2 = 4\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x1 }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\AttributeTok{length.out =} \DecValTok{100}\NormalTok{)}
+\NormalTok{x2 }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{2}\NormalTok{, }\DecValTok{6}\NormalTok{, }\AttributeTok{length.out =} \DecValTok{100}\NormalTok{)}
+
+\NormalTok{grid }\OtherTok{\textless{}{-}} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{X1 =}\NormalTok{ x1, }\AttributeTok{X2 =}\NormalTok{ x2)}
+
+\NormalTok{grid}\SpecialCharTok{$}\NormalTok{Z }\OtherTok{\textless{}{-}}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{+}\NormalTok{ grid}\SpecialCharTok{$}\NormalTok{X1)}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{+}\NormalTok{ (}\DecValTok{2} \SpecialCharTok{{-}}\NormalTok{ grid}\SpecialCharTok{$}\NormalTok{X2)}\SpecialCharTok{\^{}}\DecValTok{2}
+
+\FunctionTok{ggplot}\NormalTok{(grid, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ X1, }\AttributeTok{y =}\NormalTok{ X2, }\AttributeTok{z =}\NormalTok{ Z)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_contour}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{z =}\NormalTok{ Z), }\AttributeTok{breaks =} \DecValTok{4}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{, }\AttributeTok{linewidth =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+       \AttributeTok{x =} \StringTok{"X1"}\NormalTok{, }\AttributeTok{y =} \StringTok{"X2"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{expand\_limits}\NormalTok{(}\AttributeTok{x =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{), }\AttributeTok{y =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{2}\NormalTok{, }\DecValTok{6}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\captionsetup{labelsep=none}\includegraphics{lista-5_files/figure-pdf/fig-q2a-1.pdf}
+
+}
+
+\caption{\label{fig-q2a}}
+
+\end{figure}%
+
+~
+
+\subsubsection{Item b)}\label{item-b-1}
+
+On your sketch, indicate the set of points for which
+\((1 + X_1)^2 + (2 − X_2)^2 > 4\), as well as the set of points for
+which \((1 + X_1)^2 + (2 − X_2)^2 \leq 4\).
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\FunctionTok{subset}\NormalTok{(grid, Z }\SpecialCharTok{\textgreater{}} \DecValTok{4}\NormalTok{), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ X1, }\AttributeTok{y =}\NormalTok{ X2)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{color =} \StringTok{"red"}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.2}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =} \FunctionTok{subset}\NormalTok{(grid, Z }\SpecialCharTok{\textless{}=} \DecValTok{4}\NormalTok{), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ X1, }\AttributeTok{y =}\NormalTok{ X2), }\AttributeTok{color =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.2}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+       \AttributeTok{x =} \StringTok{"X1"}\NormalTok{, }\AttributeTok{y =} \StringTok{"X2"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\captionsetup{labelsep=none}\includegraphics{lista-5_files/figure-pdf/fig-q2b-1.pdf}
+
+}
+
+\caption{\label{fig-q2b}}
+
+\end{figure}%
+
+~
+
+\subsubsection{Item c)}\label{item-c}
+
+Suppose that a classifier assigns an observation to the blue class if
+\((1 + X_1)^2 + (2 − X_2)^2 > 4\), and to the red class otherwise. To
+what class is the observation (0, 0) classified? (−1, 1)? (2, 2)? (3,
+8)?
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+~
+
+Em ordem, teríamos as classificações: azul, vermelho, azul, azul.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{theta }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{2}\SpecialCharTok{*}\NormalTok{pi, }\AttributeTok{length.out =} \DecValTok{100}\NormalTok{)}
+
+\NormalTok{pontos }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}
+  \AttributeTok{x =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+  \AttributeTok{y =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{8}\NormalTok{),}
+  \AttributeTok{z =}\NormalTok{ (}\DecValTok{1}\SpecialCharTok{+}\NormalTok{x)}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{+}\NormalTok{ (}\DecValTok{2}\SpecialCharTok{{-}}\NormalTok{y)}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{, }
+  \AttributeTok{cor =}\NormalTok{ z }\SpecialCharTok{\textgreater{}} \DecValTok{4}
+\NormalTok{)}
+
+\FunctionTok{ggplot}\NormalTok{(grid, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ X1, }\AttributeTok{y =}\NormalTok{ X2, }\AttributeTok{z =}\NormalTok{ Z)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_contour}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{z =}\NormalTok{ Z), }\AttributeTok{breaks =} \DecValTok{4}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{, }\AttributeTok{linewidth =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =}\NormalTok{ pontos, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{y =}\NormalTok{ y, }\AttributeTok{z =}\NormalTok{ z, }\AttributeTok{color =}\NormalTok{ cor), }\AttributeTok{size =} \DecValTok{3}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{color =} \StringTok{"Z \textgreater{} 4"}\NormalTok{,}
+       \AttributeTok{x =} \StringTok{"X1"}\NormalTok{, }\AttributeTok{y =} \StringTok{"X2"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{expand\_limits}\NormalTok{(}\AttributeTok{x =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{), }\AttributeTok{y =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{2}\NormalTok{, }\DecValTok{6}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{lista-5_files/figure-pdf/unnamed-chunk-6-1.pdf}
+
+~
+
+~
+
+\subsubsection{Item d)}\label{item-d}
+
+Argue that while the decision boundary in (c) is not linear in terms of
+\(X_1\) and \(X_2\), it is linear in terms of \(X_1\), \(X^2_1\),
+\(X_2\), and \(X^2_2\).
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+De fato, se expandirmos a equação, temos
+
+\[
+(1 + X_1)^2 + (2 - X_2)^2 = 4 \\ 
+1 + 2X_1 + X^2_1 + 4 - 4X_2 + X^2_2 = 4 \\
+X^2_1 + X^2_2 +2X_1 - 4X_2 +1 = 0, 
+\] que é linear com respeito a \(X_1\), \(X^2_1\), \(X_2\), e \(X^2_2\).
+
+~
+
+\subsection{Questão 3}\label{questuxe3o-3}
+
+Here we explore the maximal margin classifier on a toy data set.
+
+\subsubsection{Item a)}\label{item-a-2}
+
+We are given n = 7 observations in p = 2 dimensions. For each
+observation, there is an associated class label. Sketch the
+observations.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+~
+
+Criando o banco de dados do exercicio e fazendo um gráfico dele.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{Obs =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{7}\NormalTok{,}
+  \AttributeTok{X1 =} \FunctionTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{4}\NormalTok{),}
+  \AttributeTok{X2 =} \FunctionTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+  \AttributeTok{Y =} \FunctionTok{c}\NormalTok{(}\StringTok{"Red"}\NormalTok{, }\StringTok{"Red"}\NormalTok{, }\StringTok{"Red"}\NormalTok{, }\StringTok{"Red"}\NormalTok{, }\StringTok{"Blue"}\NormalTok{, }\StringTok{"Blue"}\NormalTok{, }\StringTok{"Blue"}\NormalTok{)}
+\NormalTok{)}
+\FunctionTok{ggplot}\NormalTok{(df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ X1, }\AttributeTok{y =}\NormalTok{ X2, }\AttributeTok{color =}\NormalTok{ Y)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size =} \DecValTok{3}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Red"} \OtherTok{=} \StringTok{"red"}\NormalTok{, }\StringTok{"Blue"} \OtherTok{=} \StringTok{"blue"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"X1"}\NormalTok{, }\AttributeTok{y =} \StringTok{"X2"}\NormalTok{, }\AttributeTok{title =} \StringTok{"Plot of Observations"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{lista-5_files/figure-pdf/unnamed-chunk-7-1.pdf}
+
+~
+
+\subsubsection{Item b)}\label{item-b-2}
+
+Sketch the optimal separating hyperplane, and provide the equation for
+this hyperplane (of the form (9.1)).
+
+~
+
+Os pontos (x1,x2)=(2,2) e (4,3) parecem ser 2 bons pontos para se fazer
+hiperplano ótimo de separação.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calcular os coeficientes}
+\NormalTok{ponto1 }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{)}
+\NormalTok{ponto2 }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{)}
+
+\CommentTok{\# Inclinação da reta}
+\NormalTok{m }\OtherTok{\textless{}{-}}\NormalTok{ (ponto2[}\DecValTok{2}\NormalTok{] }\SpecialCharTok{{-}}\NormalTok{ ponto1[}\DecValTok{2}\NormalTok{]) }\SpecialCharTok{/}\NormalTok{ (ponto2[}\DecValTok{1}\NormalTok{] }\SpecialCharTok{{-}}\NormalTok{ ponto1[}\DecValTok{1}\NormalTok{])}
+
+\CommentTok{\# intercept}
+\NormalTok{b }\OtherTok{\textless{}{-}}\NormalTok{ ponto1[}\DecValTok{2}\NormalTok{] }\SpecialCharTok{{-}}\NormalTok{ m }\SpecialCharTok{*}\NormalTok{ ponto1[}\DecValTok{1}\NormalTok{]}
+
+\CommentTok{\# Equação da linha: X2 = m * X1 + b}
+\CommentTok{\# Converter para a forma: beta\_1 * X1 + beta\_2 * X2 + beta\_0 = 0}
+\NormalTok{beta1 }\OtherTok{\textless{}{-}} \SpecialCharTok{{-}}\NormalTok{m}
+\NormalTok{beta2 }\OtherTok{\textless{}{-}} \DecValTok{1}
+\NormalTok{beta0 }\OtherTok{\textless{}{-}} \SpecialCharTok{{-}}\NormalTok{b}
+
+\CommentTok{\# Plotar com o hiperplano}
+\FunctionTok{ggplot}\NormalTok{(df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ X1, }\AttributeTok{y =}\NormalTok{ X2, }\AttributeTok{color =}\NormalTok{ Y)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size =} \DecValTok{4}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_abline}\NormalTok{(}\AttributeTok{intercept =}\NormalTok{ b, }\AttributeTok{slope =}\NormalTok{ m, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Hiperplano de Separação Ótimo"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{lista-5_files/figure-pdf/unnamed-chunk-8-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Equação do hiperplano: "}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Equação do hiperplano: 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(beta0, }\StringTok{" + "}\NormalTok{, beta1, }\StringTok{" * X1 + "}\NormalTok{, beta2, }\StringTok{" * X2 = 0"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+-1 + -0.5 * X1 + 1 * X2 = 0
+\end{verbatim}
+
+~
+
+\subsubsection{Item c)}\label{item-c-1}
+
+Describe the classification rule for the maximal margin classifier. It
+should be something along the lines of ``Classify to Red if
+\(\beta_0 + \beta_1X_1 + \beta_2X_2 > 0\), and classify to Blue
+otherwise.'' Provide the values for \(\beta_0\), \(\beta_1\), and
+\(\beta_2\).
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Se "}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Se 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(beta0, }\StringTok{" + "}\NormalTok{, beta1, }\StringTok{" * X1 + "}\NormalTok{, beta2, }\StringTok{" * X2 \textgreater{} 0"}\NormalTok{),}\StringTok{"classifique como vermelho e azul caso contrario"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+-1 + -0.5 * X1 + 1 * X2 > 0 classifique como vermelho e azul caso contrario
+\end{verbatim}
+
+~
+
+\subsubsection{Item d)}\label{item-d-1}
+
+On your sketch, indicate the margin for the maximal margin hyperplane.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calcular a margem}
+\NormalTok{margem }\OtherTok{\textless{}{-}} \DecValTok{1} \SpecialCharTok{/} \FunctionTok{sqrt}\NormalTok{(beta1}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{+}\NormalTok{ beta2}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+
+\CommentTok{\# Adicionar linhas de margem}
+\FunctionTok{ggplot}\NormalTok{(df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ X1, }\AttributeTok{y =}\NormalTok{ X2, }\AttributeTok{color =}\NormalTok{ Y)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size =} \DecValTok{4}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_abline}\NormalTok{(}\AttributeTok{intercept =}\NormalTok{ b, }\AttributeTok{slope =}\NormalTok{ m, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Hiperplano de Separação Ótimo"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{geom\_abline}\NormalTok{(}\AttributeTok{intercept =}\NormalTok{ (b }\SpecialCharTok{+}\NormalTok{ margem }\SpecialCharTok{/}\NormalTok{ beta2), }\AttributeTok{slope =}\NormalTok{ m, }\AttributeTok{linetype =} \StringTok{"dotted"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_abline}\NormalTok{(}\AttributeTok{intercept =}\NormalTok{ (b }\SpecialCharTok{{-}}\NormalTok{ margem }\SpecialCharTok{/}\NormalTok{ beta2), }\AttributeTok{slope =}\NormalTok{ m, }\AttributeTok{linetype =} \StringTok{"dotted"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{lista-5_files/figure-pdf/unnamed-chunk-11-1.pdf}
+
+~
+
+\subsubsection{Item e)}\label{item-e}
+
+Indicate the support vectors for the maximal margin classifier.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+~
+
+Os pontos (x1,x2)=(2,2) e (4,3) foram usados como vetores de suporte.
+
+~
+
+\subsubsection{Item f)}\label{item-f}
+
+Argue that a slight movement of the seventh observation would not affect
+the maximal margin hyperplane.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+~
+
+Um movimento pequeno no ponto (4,1) não afetaria a margem máxima do
+hiperplano visto que está distante da mesma e não é um dos vetores de
+suporte. ~
+
+\subsubsection{Item g)}\label{item-g}
+
+Sketch a hyperplane that is not the optimal separating hyperplane, and
+provide the equation for this hyperplane.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Hiperplano não ótimo}
+\FunctionTok{ggplot}\NormalTok{(df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ X1, }\AttributeTok{y =}\NormalTok{ X2, }\AttributeTok{color =}\NormalTok{ Y)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size =} \DecValTok{4}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_abline}\NormalTok{(}\AttributeTok{intercept =} \DecValTok{5}\NormalTok{, }\AttributeTok{slope =} \SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\AttributeTok{color =} \StringTok{"red"}\NormalTok{, }\AttributeTok{linetype =} \StringTok{"dashed"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Hiperplano de Separação Não Ótimo"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{lista-5_files/figure-pdf/unnamed-chunk-12-1.pdf}
+
+~
+
+\subsubsection{Item h)}\label{item-h}
+
+Draw an additional observation on the plot so that the two classes are
+no longer separable by a hyperplane.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Adicionar nova observação}
+\NormalTok{df2 }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(df, }\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{X1 =} \DecValTok{3}\NormalTok{, }\AttributeTok{X2 =} \DecValTok{3}\NormalTok{, }\AttributeTok{Y =} \FunctionTok{as.factor}\NormalTok{(}\StringTok{\textquotesingle{}Blue\textquotesingle{}}\NormalTok{),}\AttributeTok{Obs=}\DecValTok{8}\NormalTok{))}
+
+\CommentTok{\# Plotar}
+\FunctionTok{ggplot}\NormalTok{(df2, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ X1, }\AttributeTok{y =}\NormalTok{ X2, }\AttributeTok{color =}\NormalTok{ Y)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size =} \DecValTok{4}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Classes não separaveis com uma nova observação"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{lista-5_files/figure-pdf/unnamed-chunk-13-1.pdf}
+
+~
+
 \subsection{Questão 4}\label{questuxe3o-4}
 
 Generate a simulated two-class data set with 100 observations and two
@@ -543,7 +911,422 @@ Radial & Classe fit 2 & 0 & 6 \\
 
 ~
 
-CURVA ROC ENTRE OS 3 MODELOS
+\subsection{Questão 6}\label{questuxe3o-6}
+
+At the end of Section 9.6.1, it is claimed that in the case of data that
+is just barely linearly separable, a support vector classifier with a
+small value of \texttt{cost} that misclassifies a couple of training
+observations may perform better on test data than one with a huge value
+of \texttt{cost} that does not misclassify any training observations.
+You will now investigate this claim.
+
+\subsubsection{Item a)}\label{item-a-3}
+
+Generate two-class data with \(p = 2\) in such a way that the classes
+are just barely linearly separable.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+~ Simulando 102 pontos de uma distribuição normal e adicionando um ruido
+de separação das classes para usarmos como um dado a ser classificado no
+exemplo.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{200}\NormalTok{)}
+\NormalTok{data }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{x1 =} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{102}\NormalTok{),}
+  \AttributeTok{x2 =} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{102}\NormalTok{),}
+  \AttributeTok{y =} \FunctionTok{factor}\NormalTok{(}\FunctionTok{rep}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}A\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}B\textquotesingle{}}\NormalTok{), }\AttributeTok{each=}\DecValTok{51}\NormalTok{))}
+\NormalTok{)}
+
+\CommentTok{\# Adicionar uma pequena separação entre as classes}
+\NormalTok{data}\SpecialCharTok{$}\NormalTok{x2[}\DecValTok{51}\SpecialCharTok{:}\DecValTok{102}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{x2[}\DecValTok{51}\SpecialCharTok{:}\DecValTok{102}\NormalTok{] }\SpecialCharTok{+}\FloatTok{2.6}
+\FunctionTok{plot}\NormalTok{(data}\SpecialCharTok{$}\NormalTok{x2, data}\SpecialCharTok{$}\NormalTok{x1, }\AttributeTok{col=}\NormalTok{data}\SpecialCharTok{$}\NormalTok{y, }\AttributeTok{pch=}\DecValTok{19}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{lista-5_files/figure-pdf/unnamed-chunk-18-1.pdf}
+
+~
+
+\subsubsection{Item b)}\label{item-b-3}
+
+Compute the cross-validation error rates for support vector classifiers
+with a range of cost values. How many training observations are
+misclassified for each value of cost considered, and how does this
+relate to the cross-validation errors obtained?
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+~
+
+Computando os erros de validação cruzada para os valores de custo 0.1,
+1, 10 e 100. Pela utilização da função tune() o melhor valor de custo é
+de 100 visto que é o que tem o menor erro de validação cruzada.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tune.out }\OtherTok{\textless{}{-}} \FunctionTok{tune}\NormalTok{(svm ,y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ . , }\AttributeTok{data =}\NormalTok{ data , }\AttributeTok{kernel =} \StringTok{"linear"}\NormalTok{,}
+                 \AttributeTok{ranges =} \FunctionTok{list}\NormalTok{(}\AttributeTok{cost =} \FunctionTok{c}\NormalTok{( }\FloatTok{0.1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{100}\NormalTok{,}\DecValTok{150}\NormalTok{)),}\AttributeTok{scale=}\ConstantTok{FALSE}\NormalTok{)}
+\FunctionTok{summary}\NormalTok{(tune.out)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+
+Parameter tuning of 'svm':
+
+- sampling method: 10-fold cross validation 
+
+- best parameters:
+ cost
+   10
+
+- best performance: 0.05909091 
+
+- Detailed performance results:
+   cost      error dispersion
+1   0.1 0.09818182 0.09229250
+2   1.0 0.06909091 0.08200876
+3  10.0 0.05909091 0.08389617
+4 100.0 0.05909091 0.08389617
+5 150.0 0.05909091 0.08389617
+\end{verbatim}
+
+A seguir seram ajustados modelos para cada valor de custo e a matriz de
+confusão para cada modelo nos dados de treino.
+
+\paragraph{valor 0.1}\label{valor-0.1}
+
+Errou 8 observações.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{modkernel1 }\OtherTok{\textless{}{-}} \FunctionTok{svm}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data=}\NormalTok{data, }\AttributeTok{kernel=}\StringTok{"linear"}\NormalTok{,}\AttributeTok{cost=}\FloatTok{0.1}\NormalTok{)}
+  
+\NormalTok{pred1}\OtherTok{\textless{}{-}}\FunctionTok{predict}\NormalTok{(modkernel1,data)}
+\FunctionTok{confusionMatrix}\NormalTok{(pred1,data}\SpecialCharTok{$}\NormalTok{y)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Confusion Matrix and Statistics
+
+          Reference
+Prediction  A  B
+         A 47  4
+         B  4 47
+                                          
+               Accuracy : 0.9216          
+                 95% CI : (0.8513, 0.9655)
+    No Information Rate : 0.5             
+    P-Value [Acc > NIR] : <2e-16          
+                                          
+                  Kappa : 0.8431          
+                                          
+ Mcnemar's Test P-Value : 1               
+                                          
+            Sensitivity : 0.9216          
+            Specificity : 0.9216          
+         Pos Pred Value : 0.9216          
+         Neg Pred Value : 0.9216          
+             Prevalence : 0.5000          
+         Detection Rate : 0.4608          
+   Detection Prevalence : 0.5000          
+      Balanced Accuracy : 0.9216          
+                                          
+       'Positive' Class : A               
+                                          
+\end{verbatim}
+
+\paragraph{valor 1}\label{valor-1}
+
+Errou 7 observações.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{modkernel2 }\OtherTok{\textless{}{-}} \FunctionTok{svm}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data=}\NormalTok{data, }\AttributeTok{kernel=}\StringTok{"linear"}\NormalTok{,}\AttributeTok{cost=}\DecValTok{1}\NormalTok{)}
+
+\NormalTok{pred2}\OtherTok{\textless{}{-}}\FunctionTok{predict}\NormalTok{(modkernel2,data)}
+\FunctionTok{confusionMatrix}\NormalTok{(pred2,data}\SpecialCharTok{$}\NormalTok{y)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Confusion Matrix and Statistics
+
+          Reference
+Prediction  A  B
+         A 48  4
+         B  3 47
+                                         
+               Accuracy : 0.9314         
+                 95% CI : (0.8637, 0.972)
+    No Information Rate : 0.5            
+    P-Value [Acc > NIR] : <2e-16         
+                                         
+                  Kappa : 0.8627         
+                                         
+ Mcnemar's Test P-Value : 1              
+                                         
+            Sensitivity : 0.9412         
+            Specificity : 0.9216         
+         Pos Pred Value : 0.9231         
+         Neg Pred Value : 0.9400         
+             Prevalence : 0.5000         
+         Detection Rate : 0.4706         
+   Detection Prevalence : 0.5098         
+      Balanced Accuracy : 0.9314         
+                                         
+       'Positive' Class : A              
+                                         
+\end{verbatim}
+
+\paragraph{valor 10}\label{valor-10}
+
+Errou 7 observações.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{modkernel3 }\OtherTok{\textless{}{-}} \FunctionTok{svm}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data=}\NormalTok{data, }\AttributeTok{kernel=}\StringTok{"linear"}\NormalTok{,}\AttributeTok{cost=}\DecValTok{10}\NormalTok{)}
+
+\NormalTok{pred3}\OtherTok{\textless{}{-}}\FunctionTok{predict}\NormalTok{(modkernel3,data)}
+\FunctionTok{confusionMatrix}\NormalTok{(pred3,data}\SpecialCharTok{$}\NormalTok{y)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Confusion Matrix and Statistics
+
+          Reference
+Prediction  A  B
+         A 48  4
+         B  3 47
+                                         
+               Accuracy : 0.9314         
+                 95% CI : (0.8637, 0.972)
+    No Information Rate : 0.5            
+    P-Value [Acc > NIR] : <2e-16         
+                                         
+                  Kappa : 0.8627         
+                                         
+ Mcnemar's Test P-Value : 1              
+                                         
+            Sensitivity : 0.9412         
+            Specificity : 0.9216         
+         Pos Pred Value : 0.9231         
+         Neg Pred Value : 0.9400         
+             Prevalence : 0.5000         
+         Detection Rate : 0.4706         
+   Detection Prevalence : 0.5098         
+      Balanced Accuracy : 0.9314         
+                                         
+       'Positive' Class : A              
+                                         
+\end{verbatim}
+
+\paragraph{Valor 100}\label{valor-100}
+
+Errou 6 observações.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{modkernel4 }\OtherTok{\textless{}{-}} \FunctionTok{svm}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data=}\NormalTok{data, }\AttributeTok{kernel=}\StringTok{"linear"}\NormalTok{,}\AttributeTok{cost=}\DecValTok{100}\NormalTok{)}
+
+\NormalTok{pred4}\OtherTok{\textless{}{-}}\FunctionTok{predict}\NormalTok{(modkernel4,data)}
+\FunctionTok{confusionMatrix}\NormalTok{(pred4,data}\SpecialCharTok{$}\NormalTok{y)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Confusion Matrix and Statistics
+
+          Reference
+Prediction  A  B
+         A 49  4
+         B  2 47
+                                          
+               Accuracy : 0.9412          
+                 95% CI : (0.8764, 0.9781)
+    No Information Rate : 0.5             
+    P-Value [Acc > NIR] : <2e-16          
+                                          
+                  Kappa : 0.8824          
+                                          
+ Mcnemar's Test P-Value : 0.6831          
+                                          
+            Sensitivity : 0.9608          
+            Specificity : 0.9216          
+         Pos Pred Value : 0.9245          
+         Neg Pred Value : 0.9592          
+             Prevalence : 0.5000          
+         Detection Rate : 0.4804          
+   Detection Prevalence : 0.5196          
+      Balanced Accuracy : 0.9412          
+                                          
+       'Positive' Class : A               
+                                          
+\end{verbatim}
+
+\paragraph{Valor 150}\label{valor-150}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{modkernel5 }\OtherTok{\textless{}{-}} \FunctionTok{svm}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data=}\NormalTok{data, }\AttributeTok{kernel=}\StringTok{"linear"}\NormalTok{,}\AttributeTok{cost=}\DecValTok{150}\NormalTok{)}
+
+\NormalTok{pred5}\OtherTok{\textless{}{-}}\FunctionTok{predict}\NormalTok{(modkernel5,data)}
+\FunctionTok{confusionMatrix}\NormalTok{(pred5,data}\SpecialCharTok{$}\NormalTok{y)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Confusion Matrix and Statistics
+
+          Reference
+Prediction  A  B
+         A 49  4
+         B  2 47
+                                          
+               Accuracy : 0.9412          
+                 95% CI : (0.8764, 0.9781)
+    No Information Rate : 0.5             
+    P-Value [Acc > NIR] : <2e-16          
+                                          
+                  Kappa : 0.8824          
+                                          
+ Mcnemar's Test P-Value : 0.6831          
+                                          
+            Sensitivity : 0.9608          
+            Specificity : 0.9216          
+         Pos Pred Value : 0.9245          
+         Neg Pred Value : 0.9592          
+             Prevalence : 0.5000          
+         Detection Rate : 0.4804          
+   Detection Prevalence : 0.5196          
+      Balanced Accuracy : 0.9412          
+                                          
+       'Positive' Class : A               
+                                          
+\end{verbatim}
+
+Como indicado na tabela de erros de validação cruzada o aumento de custo
+a partir do valor de custo 10, se torna redundante, classificando no
+máximo 1 observação a mais de forma certa.
+
+~
+
+\subsubsection{Item c)}\label{item-c-2}
+
+Generate an appropriate test data set, and compute the test errors
+corresponding to each of the values of cost considered. Which value of
+cost leads to the fewest test errors, and how does this compare to the
+values of cost that yield the fewest training errors and the fewest
+cross-validation errors?
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+~
+
+Criando 20 amostras de teste que se asemelham aos dados de treinamento
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{datateste }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{x1 =} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{20}\NormalTok{),}
+  \AttributeTok{x2 =} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{20}\NormalTok{),}
+  \AttributeTok{y =} \FunctionTok{factor}\NormalTok{(}\FunctionTok{rep}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}A\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}B\textquotesingle{}}\NormalTok{), }\AttributeTok{each=}\DecValTok{10}\NormalTok{))}
+\NormalTok{)}
+\NormalTok{datateste}\SpecialCharTok{$}\NormalTok{x2[}\DecValTok{11}\SpecialCharTok{:}\DecValTok{20}\NormalTok{]}\OtherTok{\textless{}{-}}\NormalTok{datateste}\SpecialCharTok{$}\NormalTok{x2[}\DecValTok{11}\SpecialCharTok{:}\DecValTok{20}\NormalTok{]}\SpecialCharTok{+}\FloatTok{2.2}
+\FunctionTok{plot}\NormalTok{(datateste}\SpecialCharTok{$}\NormalTok{x1, datateste}\SpecialCharTok{$}\NormalTok{x2, }\AttributeTok{col=}\NormalTok{datateste}\SpecialCharTok{$}\NormalTok{y, }\AttributeTok{pch=}\DecValTok{19}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{lista-5_files/figure-pdf/unnamed-chunk-25-1.pdf}
+
+A partir da função tune() é indicado que para os dados de teste o custo
+que melhor otimiza o modelo é 1
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tune.out1 }\OtherTok{\textless{}{-}} \FunctionTok{tune}\NormalTok{(svm ,y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ . , }\AttributeTok{data =}\NormalTok{ data , }\AttributeTok{kernel =} \StringTok{"linear"}\NormalTok{,}
+                 \AttributeTok{ranges =} \FunctionTok{list}\NormalTok{(}\AttributeTok{cost =} \FunctionTok{c}\NormalTok{( }\FloatTok{0.1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{100}\NormalTok{,}\DecValTok{150}\NormalTok{)),}\AttributeTok{scale=}\ConstantTok{FALSE}\NormalTok{)}
+\FunctionTok{summary}\NormalTok{(tune.out1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+
+Parameter tuning of 'svm':
+
+- sampling method: 10-fold cross validation 
+
+- best parameters:
+ cost
+  100
+
+- best performance: 0.06727273 
+
+- Detailed performance results:
+   cost      error dispersion
+1   0.1 0.08636364 0.09312945
+2   1.0 0.07727273 0.08476728
+3  10.0 0.07727273 0.09699337
+4 100.0 0.06727273 0.09951212
+5 150.0 0.06727273 0.09951212
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bestmodelteste}\OtherTok{\textless{}{-}}\NormalTok{tune.out1}\SpecialCharTok{$}\NormalTok{best.model}
+\NormalTok{predteste}\OtherTok{\textless{}{-}}\FunctionTok{predict}\NormalTok{(bestmodelteste,datateste)}
+\FunctionTok{confusionMatrix}\NormalTok{(predteste,datateste}\SpecialCharTok{$}\NormalTok{y)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Confusion Matrix and Statistics
+
+          Reference
+Prediction  A  B
+         A 10  1
+         B  0  9
+                                          
+               Accuracy : 0.95            
+                 95% CI : (0.7513, 0.9987)
+    No Information Rate : 0.5             
+    P-Value [Acc > NIR] : 2.003e-05       
+                                          
+                  Kappa : 0.9             
+                                          
+ Mcnemar's Test P-Value : 1               
+                                          
+            Sensitivity : 1.0000          
+            Specificity : 0.9000          
+         Pos Pred Value : 0.9091          
+         Neg Pred Value : 1.0000          
+             Prevalence : 0.5000          
+         Detection Rate : 0.5000          
+   Detection Prevalence : 0.5500          
+      Balanced Accuracy : 0.9500          
+                                          
+       'Positive' Class : A               
+                                          
+\end{verbatim}
+
+\subsubsection{Item d)}\label{item-d-2}
+
+Discuss your results.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+As questões acima mostram que a escolha do valor de custo deve ser feito
+com cuidado, de forma a não usar valores muito altos de custo ou seja
+mais restritos para a divisão de classes visto que a partir de um certo
+valor não ha mais ganho no aumento do valor do custo para a
+classificação do modelo.
+
+~
 
 \subsection{Questão 7}\label{questuxe3o-7}
 
@@ -551,7 +1334,7 @@ In this problem, you will use support vector approaches in order to
 predict whether a given car gets high or low gas mileage based on the
 \texttt{ISLR::Auto} data set.
 
-\subsubsection{Item a)}\label{item-a-1}
+\subsubsection{Item a)}\label{item-a-4}
 
 Create a binary variable that takes on a 1 for cars with gas mileage
 above the median, and a 0 for cars with gas mileage below the median.
@@ -569,7 +1352,7 @@ above the median, and a 0 for cars with gas mileage below the median.
 
 ~
 
-\subsubsection{Item b)}\label{item-b-1}
+\subsubsection{Item b)}\label{item-b-4}
 
 Fit a support vector classifier to the data with various values of
 \texttt{cost}, in order to predict whether a car gets high or low gas
@@ -633,7 +1416,7 @@ Parameter tuning of 'svm':
 
 ~
 
-\subsubsection{Item c)}\label{item-c}
+\subsubsection{Item c)}\label{item-c-3}
 
 Now repeat (b), this time using SVMs with radial and polynomial basis
 kernels, with different values of \texttt{gamma} and \texttt{degree} and
@@ -778,7 +1561,7 @@ Parameter tuning of 'svm':
 
 ~
 
-\subsubsection{Item d)}\label{item-d}
+\subsubsection{Item d)}\label{item-d-3}
 
 Make some plots to back up your assertions in (b) and (c).
 
@@ -824,7 +1607,7 @@ flexibilidade maior para classificação de novas observações.
 
 \end{figure}%
 
-~
+~ ~
 
 \section{Questão 13}\label{questuxe3o-13}
 
