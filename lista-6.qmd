@@ -164,7 +164,7 @@ rug(iris$Petal.Length)
 
 \ 
 
-Para a classificação, serão separados pontos de fronteira entre as espécies. Esses mesmos pontos serão usados nos demais itens desta questão.
+Para a classificação, será determinada uma fronteira entre as espécies. Além disso, serão reservados pontos para treino e alguns para teste, que serão usados nos demais itens desta questão.
 
 \ 
 
@@ -186,7 +186,7 @@ iris2 <- iris2 %>%
 
 \ 
 
-Os histogramas para cada espécia são estimados a seguir:
+Os histogramas para cada espécie são estimados a seguir:
 
 \ 
 
