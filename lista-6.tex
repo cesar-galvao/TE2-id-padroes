@@ -876,6 +876,272 @@ Estudar o pacote \texttt{ks} do R e apresentar um exemplo.
 
 ~
 
+\subsection{Pacote KS}\label{pacote-ks}
+
+O pacote \texttt{ks} é usado para análise de suavização de kernel e
+estimativa de densidade de kernel (KDE). Ele oferece ferramentas não
+paramétricas para estimar a densidade de uma ou mais variáveis e
+suavizar dados.
+
+Existem três tipos principais de funções neste pacote:
+
+\begin{enumerate}
+    \item \textbf{Cálculo de estimadores de kernel} - os nomes dessas funções começam com 'k'.
+    \item \textbf{Cálculo de seletores de bandwidth} - começam $h$ para dados unidimensionais ou $H$ para dados multivariados.
+    \item \textbf{Exibição de estimadores de kernel} - começam com 'plot'.
+\end{enumerate}
+
+O kernel usado em todo o pacote é o kernel normal (Gaussiano) \(K\).
+Para dados unidimensionais, o bandwidth \(h\) é o desvio padrão do
+kernel normal, enquanto para dados multivariados, a matriz de bandwidths
+\(H\) é a matriz de variância.
+
+\subsection{\texorpdfstring{Função
+\texttt{kde}}{Função kde}}\label{funuxe7uxe3o-kde}
+
+A KDE é uma técnica específica de Kernel Smoothing usada para estimar a
+função densidade de probabilidade de uma variável aleatória. Dessa
+forma, para um conjunto de dados \(X = (x_1, x_2, \ldots, x_n)\):
+
+\begin{align}
+\hat{f}(\mathbf{x}) &= n^{-1} \sum_{i=1}^{n} K_H(\mathbf{x} - \mathbf{X}_i),
+\end{align}
+
+onde:
+
+\begin{itemize}
+    \item $\hat{f}(x)$ é a densidade estimada no ponto $x$.
+    \item $n$ é o número de pontos de dados.
+    \item $H$ é a matriz de bandwidth.
+    \item $K$ é a função kernel.
+\end{itemize}
+
+\subsection{Exemplo prático}\label{exemplo-pruxe1tico}
+
+Para o exemplo prático, vamos utilizar o bando de dados \textit{Iris}.
+
+~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Carregando o conjunto de dados iris}
+\FunctionTok{data}\NormalTok{(iris)}
+\end{Highlighting}
+\end{Shaded}
+
+~
+
+Para a análise univariada de cada uma das variáveis presentes no
+conjunto de dados, temos:
+
+~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Função para calcular a densidade e criar um data frame}
+\NormalTok{calcular\_densidade }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x) \{}
+\NormalTok{  est\_densidade }\OtherTok{\textless{}{-}}\NormalTok{ ks}\SpecialCharTok{::}\FunctionTok{kde}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x)}
+  \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{x =}\NormalTok{ est\_densidade}\SpecialCharTok{$}\NormalTok{eval.points, }\AttributeTok{y =}\NormalTok{ est\_densidade}\SpecialCharTok{$}\NormalTok{estimate)}
+\NormalTok{\}}
+
+\CommentTok{\# Calculando a densidade para cada variável}
+\NormalTok{densidade\_sepal\_length }\OtherTok{\textless{}{-}} \FunctionTok{calcular\_densidade}\NormalTok{(iris}\SpecialCharTok{$}\NormalTok{Sepal.Length)}
+\NormalTok{densidade\_sepal\_width }\OtherTok{\textless{}{-}} \FunctionTok{calcular\_densidade}\NormalTok{(iris}\SpecialCharTok{$}\NormalTok{Sepal.Width)}
+\NormalTok{densidade\_petal\_length }\OtherTok{\textless{}{-}} \FunctionTok{calcular\_densidade}\NormalTok{(iris}\SpecialCharTok{$}\NormalTok{Petal.Length)}
+\NormalTok{densidade\_petal\_width }\OtherTok{\textless{}{-}} \FunctionTok{calcular\_densidade}\NormalTok{(iris}\SpecialCharTok{$}\NormalTok{Petal.Width)}
+
+\CommentTok{\# Adicionando a variável correspondente ao data frame}
+\NormalTok{densidade\_sepal\_length}\SpecialCharTok{$}\NormalTok{Variable }\OtherTok{\textless{}{-}} \StringTok{"Sepal.Length"}
+\NormalTok{densidade\_sepal\_width}\SpecialCharTok{$}\NormalTok{Variable }\OtherTok{\textless{}{-}} \StringTok{"Sepal.Width"}
+\NormalTok{densidade\_petal\_length}\SpecialCharTok{$}\NormalTok{Variable }\OtherTok{\textless{}{-}} \StringTok{"Petal.Length"}
+\NormalTok{densidade\_petal\_width}\SpecialCharTok{$}\NormalTok{Variable }\OtherTok{\textless{}{-}} \StringTok{"Petal.Width"}
+
+\CommentTok{\# Combinando todos os data frames}
+\NormalTok{densidade\_total }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(densidade\_sepal\_length, densidade\_sepal\_width, densidade\_petal\_length, densidade\_petal\_width)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(densidade\_total, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{y =}\NormalTok{ y, }\AttributeTok{color =}\NormalTok{ Variable)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Valor da Variável"}\NormalTok{,}
+       \AttributeTok{y =} \StringTok{"Densidade"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.title =} \FunctionTok{element\_blank}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics{lista-6_files/figure-pdf/fig-densidadeiris-1.pdf}
+
+}
+
+\caption{\label{fig-densidadeiris}Estimativa de densidade kernel para as
+variáveis do conjunto de dados iris.}
+
+\end{figure}%
+
+~
+
+A Figura~\ref{fig-densidadeiris} exibe as estimativas de densidade
+kernel para todas as variáveis do conjunto de dados iris:
+\texttt{Sepal.Length}, \texttt{Sepal.Width}, \texttt{Petal.Length} e
+\texttt{Petal.Width}. Cada variável é representada por uma linha de cor
+diferente, facilitando a comparação visual das distribuições dessas
+variáveis.
+
+A linha azul, representando o comprimento da sépala, mostra um pico
+significativo em torno de 5 a 6 cm, indicando que muitas observações
+possuem comprimentos de sépala nessa faixa. A linha roxa, que representa
+a largura da sépala, apresenta um pico principal em torno de 3 cm,
+indicando uma alta concentração de observações nesse valor.
+
+Para os dados de pétala, a linha vermelha, que representa o comprimento
+das pétalas, possui dois picos principais: um em torno de 1,5 cm e outro
+próximo a 5 cm, sugerindo duas distribuições distintas, possivelmente
+correspondentes a diferentes espécies. A largura da pétala, representada
+pela linha verde, apresenta um pico significativo próximo a 0,2 cm e um
+segundo pico em torno de 1,5 cm, também possivelmente correspondendo a
+duas espécies diferentes.
+
+Assim, as diferentes linhas de densidade mostram onde os valores dessas
+variáveis se concentram, ajudando a identificar padrões e diferenças
+entre elas.
+
+Para a análise multivariada, utilizaremos os dados de pétala em uma
+análise e os dados de sépala em outra.
+
+Para os dados de sépala, temos:
+
+~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Selecionando duas colunas para análise multivariada para dados de Sépala}
+\NormalTok{sep}\OtherTok{\textless{}{-}} \FunctionTok{as.matrix}\NormalTok{(iris[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{])}
+
+\CommentTok{\# Estimando a densidade usando kernel para dados multivariados}
+\NormalTok{est\_densidade\_multivariada\_sep }\OtherTok{\textless{}{-}} \FunctionTok{kde}\NormalTok{(}\AttributeTok{x =}\NormalTok{ sep, }\AttributeTok{compute.cont =} \ConstantTok{TRUE}\NormalTok{)}
+
+\CommentTok{\# Obtendo os pontos de avaliação e a densidade estimada}
+\NormalTok{eval\_points\_sep }\OtherTok{\textless{}{-}} \FunctionTok{expand.grid}\NormalTok{(est\_densidade\_multivariada\_sep}\SpecialCharTok{$}\NormalTok{eval.points[[}\DecValTok{1}\NormalTok{]], est\_densidade\_multivariada\_sep}\SpecialCharTok{$}\NormalTok{eval.points[[}\DecValTok{2}\NormalTok{]])}
+\NormalTok{density\_sep }\OtherTok{\textless{}{-}} \FunctionTok{as.vector}\NormalTok{(est\_densidade\_multivariada\_sep}\SpecialCharTok{$}\NormalTok{estimate)}
+\NormalTok{densidade\_df\_sep }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(eval\_points\_sep, density\_sep)}
+
+\CommentTok{\# Renomeando colunas}
+\FunctionTok{colnames}\NormalTok{(densidade\_df\_sep) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Sepal.Length"}\NormalTok{, }\StringTok{"Sepal.Width"}\NormalTok{, }\StringTok{"Density"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Visualizando a densidade estimada para duas dimensões com GGPLOT}
+\FunctionTok{ggplot}\NormalTok{(densidade\_df\_sep, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Sepal.Length, }\AttributeTok{y =}\NormalTok{ Sepal.Width, }\AttributeTok{fill =}\NormalTok{ Density)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_tile}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Sepal Length"}\NormalTok{,}
+       \AttributeTok{y =} \StringTok{"Sepal Width"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_gradient}\NormalTok{(}\AttributeTok{low =} \StringTok{"white"}\NormalTok{, }\AttributeTok{high =} \StringTok{"blue"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics{lista-6_files/figure-pdf/fig-densidadeiris2-1.pdf}
+
+}
+
+\caption{\label{fig-densidadeiris2}Estimativa de densidade kernel
+multivariada para as variáveis de sépala do conjunto de dados iris.}
+
+\end{figure}%
+
+~
+
+A Figura~\ref{fig-densidadeiris2} mostra a estimativa de densidade
+kernel bivariada para as variáveis: \texttt{Sepal.Length} e
+\texttt{Sepal.Width}. No eixo X, temos os valores do comprimento da
+sépala, enquanto no eixo Y estão os valores da largura da sépala. A
+densidade é representada por um mapa de calor, onde a intensidade da cor
+azul indica a magnitude da densidade, variando de claro (baixa
+densidade) a escuro (alta densidade).
+
+As áreas de cor azul mais escura indicam onde há maior concentração de
+observações, revelando duas regiões principais de alta densidade. As
+áreas de cor azul mais clara, por outro lado, indicam menor concentração
+de observações, sugerindo menos ocorrência de pares de valores nessas
+regiões.
+
+A presença de duas regiões de alta densidade sugere uma distribuição
+multimodal, indicando a existência de diferentes grupos ou espécies
+dentro do conjunto de dados. Já a dispersão dos valores indica
+variabilidade nas medidas de comprimento e de lagura da sépala.
+
+Já para os dados de pétala temos:
+
+~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Pétala}
+\CommentTok{\# Selecionando duas colunas para análise multivariada para dados de Sépala}
+\NormalTok{pet }\OtherTok{\textless{}{-}} \FunctionTok{as.matrix}\NormalTok{(iris[, }\DecValTok{3}\SpecialCharTok{:}\DecValTok{4}\NormalTok{])}
+
+\CommentTok{\# Estimando a densidade usando kernel para dados multivariados}
+\NormalTok{est\_densidade\_multivariada\_pet }\OtherTok{\textless{}{-}} \FunctionTok{kde}\NormalTok{(}\AttributeTok{x =}\NormalTok{ pet, }\AttributeTok{compute.cont =} \ConstantTok{TRUE}\NormalTok{)}
+
+\CommentTok{\# Obtendo os pontos de avaliação e a densidade estimada}
+\NormalTok{eval\_points\_pet }\OtherTok{\textless{}{-}} \FunctionTok{expand.grid}\NormalTok{(est\_densidade\_multivariada\_pet}\SpecialCharTok{$}\NormalTok{eval.points[[}\DecValTok{1}\NormalTok{]], est\_densidade\_multivariada\_pet}\SpecialCharTok{$}\NormalTok{eval.points[[}\DecValTok{2}\NormalTok{]])}
+\NormalTok{density\_pet }\OtherTok{\textless{}{-}} \FunctionTok{as.vector}\NormalTok{(est\_densidade\_multivariada\_pet}\SpecialCharTok{$}\NormalTok{estimate)}
+\NormalTok{densidade\_df\_pet }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(eval\_points\_pet, density\_pet)}
+
+\CommentTok{\# Renomeando colunas}
+\FunctionTok{colnames}\NormalTok{(densidade\_df\_pet) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Petal.Length"}\NormalTok{, }\StringTok{"Petal.Width"}\NormalTok{, }\StringTok{"Density"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Visualizando a densidade estimada para duas dimensões com GGPLOT}
+\FunctionTok{ggplot}\NormalTok{(densidade\_df\_pet, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Petal.Length, }\AttributeTok{y =}\NormalTok{ Petal.Width, }\AttributeTok{fill =}\NormalTok{ Density)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_tile}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{( }\AttributeTok{x =} \StringTok{"Petal Length"}\NormalTok{,}
+       \AttributeTok{y =} \StringTok{"Petal Width"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_gradient}\NormalTok{(}\AttributeTok{low =} \StringTok{"white"}\NormalTok{, }\AttributeTok{high =} \StringTok{"blue"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics{lista-6_files/figure-pdf/fig-densidadeiris3-1.pdf}
+
+}
+
+\caption{\label{fig-densidadeiris3}Estimativa de densidade kernel
+multivariada para as variáveis de pétala do conjunto de dados iris.}
+
+\end{figure}%
+
+~
+
+A Figura~\ref{fig-densidadeiris3} mostra a estimativa de densidade
+kernel bivariada para as variáveis \texttt{Petal.Length} e
+\texttt{Petal.Width}. No eixo X, estão os valores do comprimento da
+pétala, enquanto no eixo Y estão os valores da largura da pétala.
+
+A dispersão da densidade ao longo do gráfico sugere uma relação linear
+entre largura e comprimento da pétala, indicando que à medida que um
+característica aumenta, a outra também tende a aumentar.
+
 ~
 
 \section{Questão 17}\label{questuxe3o-17}

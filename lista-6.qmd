@@ -49,7 +49,7 @@ if (!("pacman" %in% installed.packages())){
   install.packages("pacman")
 }
 
-pacman::p_load(tidyverse, cowplot, latex2exp, ks, class, PerformanceAnalytics, MASS, magrittr)
+pacman::p_load(tidyverse, cowplot, latex2exp, ks, class, PerformanceAnalytics, MASS, magrittr, reshape2)
 ```
 
 # Questão 14
@@ -509,6 +509,192 @@ Estudar o pacote `ks` do R e apresentar um exemplo.
 
 \ 
 
+## Pacote KS
+
+O pacote `ks` é usado para análise de suavização de kernel e estimativa de densidade de kernel (KDE). Ele oferece ferramentas não paramétricas para estimar a densidade de uma ou mais variáveis e suavizar dados.
+
+Existem três tipos principais de funções neste pacote:
+
+\begin{enumerate}
+    \item \textbf{Cálculo de estimadores de kernel} - os nomes dessas funções começam com 'k'.
+    \item \textbf{Cálculo de seletores de bandwidth} - começam $h$ para dados unidimensionais ou $H$ para dados multivariados.
+    \item \textbf{Exibição de estimadores de kernel} - começam com 'plot'.
+\end{enumerate}
+
+O kernel usado em todo o pacote é o kernel normal (Gaussiano) $K$. Para dados unidimensionais, o bandwidth $h$ é o desvio padrão do kernel normal, enquanto para dados multivariados, a matriz de bandwidths $H$ é a matriz de variância.
+
+## Função `kde`
+
+A KDE é uma técnica específica de Kernel Smoothing usada para estimar a função densidade de probabilidade de uma variável aleatória. Dessa forma, para um conjunto de dados $X = (x_1, x_2, \ldots, x_n)$:
+
+\begin{align}
+\hat{f}(\mathbf{x}) &= n^{-1} \sum_{i=1}^{n} K_H(\mathbf{x} - \mathbf{X}_i),
+\end{align}
+
+onde:
+\begin{itemize}
+    \item $\hat{f}(x)$ é a densidade estimada no ponto $x$.
+    \item $n$ é o número de pontos de dados.
+    \item $H$ é a matriz de bandwidth.
+    \item $K$ é a função kernel.
+\end{itemize}
+
+## Exemplo prático
+
+Para o exemplo prático, vamos utilizar o bando de dados \textit{Iris}.
+
+\ 
+
+```{r}
+# Carregando o conjunto de dados iris
+data(iris)
+```
+
+\ 
+
+Para a análise univariada de cada uma das variáveis presentes no conjunto de dados, temos:
+
+\ 
+
+```{r}
+#| label: analise univariada
+
+# Função para calcular a densidade e criar um data frame
+calcular_densidade <- function(x) {
+  est_densidade <- ks::kde(x = x)
+  data.frame(x = est_densidade$eval.points, y = est_densidade$estimate)
+}
+
+# Calculando a densidade para cada variável
+densidade_sepal_length <- calcular_densidade(iris$Sepal.Length)
+densidade_sepal_width <- calcular_densidade(iris$Sepal.Width)
+densidade_petal_length <- calcular_densidade(iris$Petal.Length)
+densidade_petal_width <- calcular_densidade(iris$Petal.Width)
+
+# Adicionando a variável correspondente ao data frame
+densidade_sepal_length$Variable <- "Sepal.Length"
+densidade_sepal_width$Variable <- "Sepal.Width"
+densidade_petal_length$Variable <- "Petal.Length"
+densidade_petal_width$Variable <- "Petal.Width"
+
+# Combinando todos os data frames
+densidade_total <- rbind(densidade_sepal_length, densidade_sepal_width, densidade_petal_length, densidade_petal_width)
+```
+
+```{r}
+#| label: fig-densidadeiris
+#| fig-cap: Estimativa de densidade kernel para as variáveis do conjunto de dados iris.
+#| fig-height: 3
+
+ggplot(densidade_total, aes(x = x, y = y, color = Variable)) +
+  geom_line() +
+  labs(x = "Valor da Variável",
+       y = "Densidade") +
+  theme_minimal() +
+  theme(legend.title = element_blank())
+```
+
+
+\ 
+
+A @fig-densidadeiris exibe as estimativas de densidade kernel para todas as variáveis do conjunto de dados iris: `Sepal.Length`, `Sepal.Width`, `Petal.Length` e `Petal.Width`. Cada variável é representada por uma linha de cor diferente, facilitando a comparação visual das distribuições dessas variáveis.
+
+A linha azul, representando o comprimento da sépala, mostra um pico significativo em torno de 5 a 6 cm, indicando que muitas observações possuem comprimentos de sépala nessa faixa. A linha roxa, que representa a largura da sépala, apresenta um pico principal em torno de 3 cm, indicando uma alta concentração de observações nesse valor.
+
+Para os dados de pétala, a linha vermelha, que representa o comprimento das pétalas, possui dois picos principais: um em torno de 1,5 cm e outro próximo a 5 cm, sugerindo duas distribuições distintas, possivelmente correspondentes a diferentes espécies. A largura da pétala, representada pela linha verde, apresenta um pico significativo próximo a 0,2 cm e um segundo pico em torno de 1,5 cm, também possivelmente correspondendo a duas espécies diferentes.
+
+Assim, as diferentes linhas de densidade mostram onde os valores dessas variáveis se concentram, ajudando a identificar padrões e diferenças entre elas.
+
+Para a análise multivariada, utilizaremos os dados de pétala em uma análise e os dados de sépala em outra.
+
+Para os dados de sépala, temos:
+
+\ 
+
+```{r}
+#| label: sepala
+
+# Selecionando duas colunas para análise multivariada para dados de Sépala
+sep<- as.matrix(iris[, 1:2])
+
+# Estimando a densidade usando kernel para dados multivariados
+est_densidade_multivariada_sep <- kde(x = sep, compute.cont = TRUE)
+
+# Obtendo os pontos de avaliação e a densidade estimada
+eval_points_sep <- expand.grid(est_densidade_multivariada_sep$eval.points[[1]], est_densidade_multivariada_sep$eval.points[[2]])
+density_sep <- as.vector(est_densidade_multivariada_sep$estimate)
+densidade_df_sep <- data.frame(eval_points_sep, density_sep)
+
+# Renomeando colunas
+colnames(densidade_df_sep) <- c("Sepal.Length", "Sepal.Width", "Density")
+```
+
+```{r}
+#| label: fig-densidadeiris2
+#| fig-cap: Estimativa de densidade kernel multivariada para as variáveis de sépala do conjunto de dados iris.
+#| fig-height: 4
+
+# Visualizando a densidade estimada para duas dimensões com GGPLOT
+ggplot(densidade_df_sep, aes(x = Sepal.Length, y = Sepal.Width, fill = Density)) +
+  geom_tile() +
+  labs(x = "Sepal Length",
+       y = "Sepal Width") +
+  scale_fill_gradient(low = "white", high = "blue") +
+  theme_minimal()
+```
+
+
+\ 
+
+A @fig-densidadeiris2 mostra a estimativa de densidade kernel bivariada para as variáveis: `Sepal.Length` e `Sepal.Width`. No eixo X, temos os valores do comprimento da sépala, enquanto no eixo Y estão os valores da largura da sépala. A densidade é representada por um mapa de calor, onde a intensidade da cor azul indica a magnitude da densidade, variando de claro (baixa densidade) a escuro (alta densidade).
+
+As áreas de cor azul mais escura indicam onde há maior concentração de observações, revelando duas regiões principais de alta densidade. As áreas de cor azul mais clara, por outro lado, indicam menor concentração de observações, sugerindo menos ocorrência de pares de valores nessas regiões.
+
+A presença de duas regiões de alta densidade sugere uma distribuição multimodal, indicando a existência de diferentes grupos ou espécies dentro do conjunto de dados. Já a dispersão dos valores indica variabilidade nas medidas de comprimento e de lagura da sépala.
+
+Já para os dados de pétala temos:
+
+\ 
+
+```{r}
+#| label: petala
+
+### Pétala
+# Selecionando duas colunas para análise multivariada para dados de Sépala
+pet <- as.matrix(iris[, 3:4])
+
+# Estimando a densidade usando kernel para dados multivariados
+est_densidade_multivariada_pet <- kde(x = pet, compute.cont = TRUE)
+
+# Obtendo os pontos de avaliação e a densidade estimada
+eval_points_pet <- expand.grid(est_densidade_multivariada_pet$eval.points[[1]], est_densidade_multivariada_pet$eval.points[[2]])
+density_pet <- as.vector(est_densidade_multivariada_pet$estimate)
+densidade_df_pet <- data.frame(eval_points_pet, density_pet)
+
+# Renomeando colunas
+colnames(densidade_df_pet) <- c("Petal.Length", "Petal.Width", "Density")
+```
+
+```{r}
+#| label: fig-densidadeiris3
+#| fig-cap: Estimativa de densidade kernel multivariada para as variáveis de pétala do conjunto de dados iris.
+#| fig-height: 4
+
+# Visualizando a densidade estimada para duas dimensões com GGPLOT
+ggplot(densidade_df_pet, aes(x = Petal.Length, y = Petal.Width, fill = Density)) +
+  geom_tile() +
+  labs( x = "Petal Length",
+       y = "Petal Width") +
+  scale_fill_gradient(low = "white", high = "blue") +
+  theme_minimal()
+```
+
+
+\ 
+
+A @fig-densidadeiris3 mostra a estimativa de densidade kernel bivariada para as variáveis `Petal.Length` e `Petal.Width`. No eixo X, estão os valores do comprimento da pétala, enquanto no eixo Y estão os valores da largura da pétala.
+
+A dispersão da densidade ao longo do gráfico sugere uma relação linear entre largura e comprimento da pétala, indicando que à medida que um característica aumenta, a outra também tende a aumentar.
 
 \ 
 
