@@ -61,6 +61,96 @@ utilizando validação cruzada e Bootstrap.
 
 \ 
 
+O pacote "rsample" é um conjunto de funções que tem o intuito gerar diferentes tipos de reamostragem para criar diferentes tipos de amostras e analisar seu desempenho, sendo útil para analisar o desempenho de um modelo com um conjunto de validação.
+
+## Bootstrap
+
+```{r}
+#| echo: false
+#| output: false
+library(rsample)
+library(tidyverse)
+library(caret)
+```
+
+O exemplo da utilização do pacote "rsample" para a utilização de bootstrap é feito pela função "bootstraps" em que a função retorna um conjunto de listas em que cada lista contem as informaçoes dos bootstraps realizados. O exemplo foi utilizando o banco de dados "Iris" e realizando o bootstrap 10 vezes.
+
+```{r}
+set.seed(123)
+boot_splits <- bootstraps(iris, times = 10 )
+```
+
+O argumento "Split" retorna uma descrição sobre cada um dos bootstraps realizados em que "analysis" é o conjunto de dados feito por bootstrap, "assessment" são as amostras do banco de original que não foram utilizados no bootstrap e "total" é a quantidade de amostras do banco de dados original que tambem é a mesma quantidade do banco de dados feito por bootstrap.
+
+```{r}
+boot_splits$splits
+```
+
+Tais partições podem ser chamada pelas funçoes "analysis" e "assessment" respectivamente.
+
+```{r}
+
+boot_splits$splits[[1]] %>%
+  analysis() %>%
+  head()
+
+boot_splits$splits[[1]] %>%
+  assessment() %>%
+  head()
+
+```
+
+A seguir calculamos a média da variável "Sepal.Length" para cada partição de bootstrap feito, podemos ver que os boostraps realizados tem uma média em torno de 5.83, assim podemos confirmar que existe uma consistência entre os bootstraps realizados.
+
+```{r}
+boot_results <- boot_splits %>% 
+  mutate(mean_sepal_length = map_dbl(splits, ~ {
+    train_data <- analysis(.x)
+    mean(train_data$Sepal.Length)
+  }))
+
+# Visualizar Resultados
+boot_results %>% 
+  dplyr::select(id, mean_sepal_length) %>% 
+  head()
+
+```
+
+## Validação cruzada
+
+A validação cruzada é uma técnicas estatítisticas utilizadas para avaliar a adequação de um modelo. Para o exemplo utilizaremos a validação cruzada v-fold(tambem conhecida como k-fold), que consiste em dividir o banco de dado em V subconjuntos, treinando os modelos para V-1 partiçoes e testando o modelo na partição não utilizada. Para exemplificar utilizaremos a função "vfold_cv", em que difente função "bootstraps" a função "analysis" retorna o conjunto de dados utilizados para treino e a função "assessment" retorna o conjunto de dados utilizado para teste.
+
+```{r}
+set.seed(123)
+cv_splits <- vfold_cv(iris, v = 5)
+cv_splits$splits
+```
+
+Para exemplificar a utilização da validação cruzada, ajustaremos modelos de árvore de decisão ("rpart") para cada partição da validação cruzada v-fold no seu respectivo conjunto de treino e avaliaremos o quanto o modelo ajustado acerta nas predições feitas no conjunto de teste.
+
+```{r}
+results <- cv_splits %>% 
+  mutate(model = map(splits, ~ {
+    train_data <- analysis(.x)
+    test_data  <- assessment(.x)
+    
+    model <- train(Species ~ ., data = train_data, method = "rpart")
+    
+    predictions <- predict(model, test_data)
+    accuracy <- mean(predictions == test_data$Species)
+    
+    return(accuracy)
+  }))
+
+# Visualizar Resultados
+results %>% 
+  dplyr::select(id, model) %>% 
+  unnest(model)
+
+```
+
+Assim podemos ver que a validação cruzada permite avaliar a performance do modelo de forma robusta, utilizando diferentes subconjuntos dos dados para treino e teste. Isso ajuda a garantir que o modelo se ajusta bem para novos dados.
+
 
 \ 
 
@@ -590,8 +680,10 @@ ggplot(densidade_total, aes(x = x, y = y, color = Variable)) +
   geom_line() +
   labs(x = "Valor da Variável",
        y = "Densidade") +
-  theme_minimal() +
-  theme(legend.title = element_blank())
+  theme_bw() +
+  theme(legend.title = element_blank(),
+        panel.border = element_blank(),
+        axis.line = element_line())
 ```
 
 
@@ -640,7 +732,8 @@ ggplot(densidade_df_sep, aes(x = Sepal.Length, y = Sepal.Width, fill = Density))
   labs(x = "Sepal Length",
        y = "Sepal Width") +
   scale_fill_gradient(low = "white", high = "blue") +
-  theme_minimal()
+  theme_bw()+
+  theme(panel.grid = element_blank())
 ```
 
 
@@ -686,7 +779,8 @@ ggplot(densidade_df_pet, aes(x = Petal.Length, y = Petal.Width, fill = Density))
   labs( x = "Petal Length",
        y = "Petal Width") +
   scale_fill_gradient(low = "white", high = "blue") +
-  theme_minimal()
+  theme_bw()+
+  theme(panel.grid = element_blank())
 ```
 
 

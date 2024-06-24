@@ -221,6 +221,253 @@ um exemplo utilizando validação cruzada e Bootstrap.
 
 ~
 
+O pacote ``rsample'' é um conjunto de funções que tem o intuito gerar
+diferentes tipos de reamostragem para criar diferentes tipos de amostras
+e analisar seu desempenho, sendo útil para analisar o desempenho de um
+modelo com um conjunto de validação.
+
+\subsection{Bootstrap}\label{bootstrap}
+
+O exemplo da utilização do pacote ``rsample'' para a utilização de
+bootstrap é feito pela função ``bootstraps'' em que a função retorna um
+conjunto de listas em que cada lista contem as informaçoes dos
+bootstraps realizados. O exemplo foi utilizando o banco de dados
+``Iris'' e realizando o bootstrap 10 vezes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{boot\_splits }\OtherTok{\textless{}{-}} \FunctionTok{bootstraps}\NormalTok{(iris, }\AttributeTok{times =} \DecValTok{10}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
+
+O argumento ``Split'' retorna uma descrição sobre cada um dos bootstraps
+realizados em que ``analysis'' é o conjunto de dados feito por
+bootstrap, ``assessment'' são as amostras do banco de original que não
+foram utilizados no bootstrap e ``total'' é a quantidade de amostras do
+banco de dados original que tambem é a mesma quantidade do banco de
+dados feito por bootstrap.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{boot\_splits}\SpecialCharTok{$}\NormalTok{splits}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[[1]]
+<Analysis/Assess/Total>
+<150/56/150>
+
+[[2]]
+<Analysis/Assess/Total>
+<150/58/150>
+
+[[3]]
+<Analysis/Assess/Total>
+<150/50/150>
+
+[[4]]
+<Analysis/Assess/Total>
+<150/58/150>
+
+[[5]]
+<Analysis/Assess/Total>
+<150/56/150>
+
+[[6]]
+<Analysis/Assess/Total>
+<150/55/150>
+
+[[7]]
+<Analysis/Assess/Total>
+<150/56/150>
+
+[[8]]
+<Analysis/Assess/Total>
+<150/52/150>
+
+[[9]]
+<Analysis/Assess/Total>
+<150/60/150>
+
+[[10]]
+<Analysis/Assess/Total>
+<150/55/150>
+\end{verbatim}
+
+Tais partições podem ser chamada pelas funçoes ``analysis'' e
+``assessment'' respectivamente.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{boot\_splits}\SpecialCharTok{$}\NormalTok{splits[[}\DecValTok{1}\NormalTok{]] }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{analysis}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{head}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}rrrrl@{}}
+\toprule\noalign{}
+Sepal.Length & Sepal.Width & Petal.Length & Petal.Width & Species \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+4.3 & 3.0 & 1.1 & 0.1 & setosa \\
+5.0 & 3.3 & 1.4 & 0.2 & setosa \\
+7.7 & 3.8 & 6.7 & 2.2 & virginica \\
+4.4 & 3.2 & 1.3 & 0.2 & setosa \\
+4.3 & 3.0 & 1.1 & 0.1 & setosa \\
+7.7 & 3.8 & 6.7 & 2.2 & virginica \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{boot\_splits}\SpecialCharTok{$}\NormalTok{splits[[}\DecValTok{1}\NormalTok{]] }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{assessment}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{head}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}rrrrl@{}}
+\toprule\noalign{}
+Sepal.Length & Sepal.Width & Petal.Length & Petal.Width & Species \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+4.9 & 3.0 & 1.4 & 0.2 & setosa \\
+4.7 & 3.2 & 1.3 & 0.2 & setosa \\
+5.0 & 3.4 & 1.5 & 0.2 & setosa \\
+4.8 & 3.4 & 1.6 & 0.2 & setosa \\
+5.8 & 4.0 & 1.2 & 0.2 & setosa \\
+5.1 & 3.5 & 1.4 & 0.3 & setosa \\
+\end{longtable}
+
+A seguir calculamos a média da variável ``Sepal.Length'' para cada
+partição de bootstrap feito, podemos ver que os boostraps realizados tem
+uma média em torno de 5.83, assim podemos confirmar que existe uma
+consistência entre os bootstraps realizados.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{boot\_results }\OtherTok{\textless{}{-}}\NormalTok{ boot\_splits }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{mean\_sepal\_length =} \FunctionTok{map\_dbl}\NormalTok{(splits, }\SpecialCharTok{\textasciitilde{}}\NormalTok{ \{}
+\NormalTok{    train\_data }\OtherTok{\textless{}{-}} \FunctionTok{analysis}\NormalTok{(.x)}
+    \FunctionTok{mean}\NormalTok{(train\_data}\SpecialCharTok{$}\NormalTok{Sepal.Length)}
+\NormalTok{  \}))}
+
+\CommentTok{\# Visualizar Resultados}
+\NormalTok{boot\_results }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(id, mean\_sepal\_length) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{head}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+\toprule\noalign{}
+id & mean\_sepal\_length \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Bootstrap01 & 5.774000 \\
+Bootstrap02 & 5.897333 \\
+Bootstrap03 & 5.924667 \\
+Bootstrap04 & 5.871333 \\
+Bootstrap05 & 5.736667 \\
+Bootstrap06 & 5.793333 \\
+\end{longtable}
+
+\subsection{Validação cruzada}\label{validauxe7uxe3o-cruzada}
+
+A validação cruzada é uma técnicas estatítisticas utilizadas para
+avaliar a adequação de um modelo. Para o exemplo utilizaremos a
+validação cruzada v-fold(tambem conhecida como k-fold), que consiste em
+dividir o banco de dado em V subconjuntos, treinando os modelos para V-1
+partiçoes e testando o modelo na partição não utilizada. Para
+exemplificar utilizaremos a função ``vfold\_cv'', em que difente função
+``bootstraps'' a função ``analysis'' retorna o conjunto de dados
+utilizados para treino e a função ``assessment'' retorna o conjunto de
+dados utilizado para teste.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{cv\_splits }\OtherTok{\textless{}{-}} \FunctionTok{vfold\_cv}\NormalTok{(iris, }\AttributeTok{v =} \DecValTok{5}\NormalTok{)}
+\NormalTok{cv\_splits}\SpecialCharTok{$}\NormalTok{splits}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[[1]]
+<Analysis/Assess/Total>
+<120/30/150>
+
+[[2]]
+<Analysis/Assess/Total>
+<120/30/150>
+
+[[3]]
+<Analysis/Assess/Total>
+<120/30/150>
+
+[[4]]
+<Analysis/Assess/Total>
+<120/30/150>
+
+[[5]]
+<Analysis/Assess/Total>
+<120/30/150>
+\end{verbatim}
+
+Para exemplificar a utilização da validação cruzada, ajustaremos modelos
+de árvore de decisão (``rpart'') para cada partição da validação cruzada
+v-fold no seu respectivo conjunto de treino e avaliaremos o quanto o
+modelo ajustado acerta nas predições feitas no conjunto de teste.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{results }\OtherTok{\textless{}{-}}\NormalTok{ cv\_splits }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model =} \FunctionTok{map}\NormalTok{(splits, }\SpecialCharTok{\textasciitilde{}}\NormalTok{ \{}
+\NormalTok{    train\_data }\OtherTok{\textless{}{-}} \FunctionTok{analysis}\NormalTok{(.x)}
+\NormalTok{    test\_data  }\OtherTok{\textless{}{-}} \FunctionTok{assessment}\NormalTok{(.x)}
+    
+\NormalTok{    model }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(Species }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ train\_data, }\AttributeTok{method =} \StringTok{"rpart"}\NormalTok{)}
+    
+\NormalTok{    predictions }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(model, test\_data)}
+\NormalTok{    accuracy }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(predictions }\SpecialCharTok{==}\NormalTok{ test\_data}\SpecialCharTok{$}\NormalTok{Species)}
+    
+    \FunctionTok{return}\NormalTok{(accuracy)}
+\NormalTok{  \}))}
+
+\CommentTok{\# Visualizar Resultados}
+\NormalTok{results }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(id, model) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{unnest}\NormalTok{(model)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+\toprule\noalign{}
+id & model \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Fold1 & 1.0000000 \\
+Fold2 & 0.8666667 \\
+Fold3 & 0.9000000 \\
+Fold4 & 0.9000000 \\
+Fold5 & 0.9666667 \\
+\end{longtable}
+
+Assim podemos ver que a validação cruzada permite avaliar a performance
+do modelo de forma robusta, utilizando diferentes subconjuntos dos dados
+para treino e teste. Isso ajuda a garantir que o modelo se ajusta bem
+para novos dados.
+
 ~
 
 \section{Questão 15}\label{questuxe3o-15}
@@ -967,8 +1214,10 @@ conjunto de dados, temos:
   \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+}
   \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Valor da Variável"}\NormalTok{,}
        \AttributeTok{y =} \StringTok{"Densidade"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
-  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.title =} \FunctionTok{element\_blank}\NormalTok{())}
+  \FunctionTok{theme\_bw}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.title =} \FunctionTok{element\_blank}\NormalTok{(),}
+        \AttributeTok{panel.border =} \FunctionTok{element\_blank}\NormalTok{(),}
+        \AttributeTok{axis.line =} \FunctionTok{element\_line}\NormalTok{())}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1045,7 +1294,8 @@ Para os dados de sépala, temos:
   \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Sepal Length"}\NormalTok{,}
        \AttributeTok{y =} \StringTok{"Sepal Width"}\NormalTok{) }\SpecialCharTok{+}
   \FunctionTok{scale\_fill\_gradient}\NormalTok{(}\AttributeTok{low =} \StringTok{"white"}\NormalTok{, }\AttributeTok{high =} \StringTok{"blue"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{theme\_minimal}\NormalTok{()}
+  \FunctionTok{theme\_bw}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{panel.grid =} \FunctionTok{element\_blank}\NormalTok{())}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1114,7 +1364,8 @@ Já para os dados de pétala temos:
   \FunctionTok{labs}\NormalTok{( }\AttributeTok{x =} \StringTok{"Petal Length"}\NormalTok{,}
        \AttributeTok{y =} \StringTok{"Petal Width"}\NormalTok{) }\SpecialCharTok{+}
   \FunctionTok{scale\_fill\_gradient}\NormalTok{(}\AttributeTok{low =} \StringTok{"white"}\NormalTok{, }\AttributeTok{high =} \StringTok{"blue"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{theme\_minimal}\NormalTok{()}
+  \FunctionTok{theme\_bw}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{panel.grid =} \FunctionTok{element\_blank}\NormalTok{())}
 \end{Highlighting}
 \end{Shaded}
 
