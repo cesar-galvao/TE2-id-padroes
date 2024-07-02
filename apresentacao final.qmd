@@ -1,0 +1,379 @@
+---
+format: 
+ revealjs:
+   incremental: true
+   theme: slide-theme.scss
+   transition: slide
+   margin: 0
+   smaller: false
+   subtitle: ''
+lang: pt
+---
+
+
+# GMM
+
+*Gaussian Mixture Models*
+
+\ 
+
+Tópicos Especiais 2 - Identificação de padrões
+
+Prof. George Von Borries
+
+## Integrantes
+
+  - César A. Galvão - 190011572
+  - Gabriela Carneiro - 180120816
+  - João Vitor Vasconcelos - 170126064
+  - Kevyn Andrade de Souza - 190015853
+  
+  
+# Contextualização
+
+## Classificação supervisionada
+
+\ 
+
+- Principal objetivo é montar uma regra de decisão para classificação, uma análise discriminante;
+
+\ 
+
+- Desejamos classificar uma observação $\mathbf{x}$ na classe $C_k, \, k = 1, \dots, K$ a partir de uma probabilidade a posteriori $\text{Pr}(C_k|\mathbf{x})$ para cada classe $k$.
+
+## Classificação supervisionada
+
+Aprendendo as densidades condicionais das classes $f(\mathbf{x}|C_k)$ e das probabilidades a priori $\text{Pr}(C_k)$ --- na prática a frequência relativa de cada grupo --- podemos calcular a probabilidade a posteriori $\text{Pr}(C_k|\mathbf{x})$ a partir do teorema de Bayes:
+
+\ 
+
+$$
+\text{Pr}(C_k|\mathbf{x}) = \frac{f(\mathbf{x}|C_k) \text{Pr}(C_k)}{\sum\limits_{g=1}^{K} f(\mathbf{x}|C_k) \text{Pr}(C_k)}
+$$ {#eq-1}
+
+\ 
+
+Modelos com essa abordagem são chamados de *modelos generativos*.
+
+## Classificação supervisionada
+
+Para construção do modelo, parte dos dados disponíveis devem ser usados para calibragem e o restante para teste de seu desempenho. 
+
+\ 
+
+A validação cruzada evita *overfitting* avaliando o desempenho do modelo em dados não vistos anteriormente, simulando casos "reais".
+
+
+## Classificação baseada em GMM
+
+Esse tipo de modelos assume que a densidade em cada classe segue uma mistura de gaussianas:
+
+\ 
+
+$$
+f(\mathbf{x}|C_k) = \sum\limits_{g=1}^{G_k} \pi_{g,k} \, \phi(\mathbf{x}; \boldsymbol{\mu}_{g,k}, \boldsymbol{\Sigma}_{g,k})
+$$ {#eq-2}
+\ 
+
+onde, dada uma classe $C_k$, com $k$ fixo: 
+
+- $\pi_{g,k}$ é o "peso" de uma componente gaussiana $g$ na classe $k$
+- $\phi(\mathbf{x}; \boldsymbol{\mu}_{g,k}, \boldsymbol{\Sigma}_{g,k})$ é a densidade gaussiana multivariada com média $\boldsymbol{\mu}_{g,k}$ e matriz de covariância $\boldsymbol{\Sigma}_{g,k}$.
+
+## Classificação baseada em GMM
+
+O modelo mais geral com base na @eq-1  é o MclustDA[^1], que usa uma mistura finita de gaussianas para as classes, entre as quais o número de componentes e matrizes de covariâncias podem diferir.
+
+As matrizes de covariância para a análise discriminante podem ser decompostas da forma a seguir:
+
+\ 
+
+$$
+\boldsymbol{\Sigma}_{k} = \lambda_k\mathbf{U}_k\boldsymbol{\Delta}_k\mathbf{U}_k^\top.
+$$ {#eq-3}
+
+\ 
+
+Classes de modelos com diferentes parametrizações foram vistas em aula (ex: EEE, VVV, etc).
+
+\ 
+
+[^1]: Fraley, C. & Raftery, A. E. Model-based clustering, discriminant analysis, and density estimation. *Journal of the American Statistical Association*; Jun 2002; 97, 458.
+
+## Classificação baseada em GMM
+
+Utilizando a @eq-1 e a @eq-2, a classificação pode ser feita a partir de
+
+$$
+\text{Pr}(C_k|\mathbf{x}) = \frac{f(\mathbf{x}|C_k) \text{Pr}(C_k)}{\sum\limits_{g=1}^{K} f(\mathbf{x}|C_k) \text{Pr}(C_k)} =  \frac{ \text{Pr}(C_k) \sum\limits_{g=1}^{G_k} \pi_{g,k} \, \phi(\mathbf{x}; \boldsymbol{\mu}_{g,k}, \boldsymbol{\Sigma}_{g,k}) }{\sum\limits_{g=1}^{K} \text{Pr}(C_k) \sum\limits_{k=1}^{G_k} \pi_{g,k} \, \phi(\mathbf{x}; \boldsymbol{\mu}_{g,k}, \boldsymbol{\Sigma}_{g,k})}.
+$$
+
+\ 
+
+Uma possível estratégia de classificação é escolher a classe $C_k$ que maximiza a probabilidade a posteriori (MAP).
+
+## mclust::MclustDA()
+
+O pacote `mclust` implementa, conforme o livro de referência, *Gaussian Mixture Modelling for Model-Based Clustering, Classification, and Density Estimation*[^2].
+
+[^2]: <https://mclust-org.github.io/mclust/index.html>
+
+\ 
+
+A função `mclust::MclustDA()` implementa o modelo MclustDA (`mclust` *Discriminant Analysis*) com otimização feita via método EM.
+
+## mclust::MclustDA()
+
+```{r}
+#| label: args-mclustDA
+#| eval: false
+#| echo: true
+
+MclustDA(data, class, G = NULL, modelNames = NULL, 
+         modelType = c("MclustDA", "EDDA"), 
+         prior = NULL, 
+         control = emControl(), 
+         initialization = NULL, 
+         warn = mclust.options("warn"), 
+         verbose = interactive(),
+         ...)
+```
+
+## mclust::MclustDA()
+
+- `data`: dados de treinamento;
+- `class`: vetor de classes;
+- `G`: número de componentes da mistura. Default é `G = 1:5`;
+- `modelNames`: nomes dos modelos a serem ajustados, ex: "EEE";
+- `modelType`: tipo de modelo a ser ajustado, `MclustDA` ou `EDDA`. Default é o primeiro, `EDDA` ocorre quando `G = 1`;
+- `prior`: vetor de probabilidades a priori para cada classe;
+- `control`: parâmetros de controle do EM;
+
+# Exemplo de classificação
+
+```{r}
+#| label: pacotes
+#| include: false
+
+pacman::p_load(mclust, tidyverse, cowplot, magrittr, qrcode)
+```
+
+```{r}
+#| label: importacao e tratamento
+#| include: false
+
+set.seed(123)
+
+data(faithful)
+
+dados <- faithful %>%
+  mutate(class_2 = if_else(waiting > 25 + 13 * eruptions, "A", "B"),
+         class_1 = if_else(waiting > 110 + -15 * eruptions, "A", "B"),
+         treino = sample(c(0,1), 
+                         size = nrow(faithful), 
+                         prob = c(0.3, 0.7),
+                         replace = TRUE)
+         )
+```
+
+## Dados utilizados
+
+Será utilizada a base de dados `faithful` com classificações arbitrárias `class_1` e `class_2`, assim como a separação entre treino e teste (70/30).
+
+```{r}
+#| label: exemplo de dados
+
+head(dados) 
+```
+
+
+## Gráficos dos grupos
+
+```{r}
+#| label: fig-dados
+#| echo: false
+#| fig-cap: Dados classificados em classes para testes de desempenho.
+  
+p1 <- dados %>%
+  ggplot() +
+  geom_point(aes(x = eruptions, y = waiting, color = class_1))+
+  theme_bw()+
+  theme(legend.position = "none")
+
+p2 <- dados %>%
+  ggplot() +
+  geom_point(aes(x = eruptions, y = waiting, color = class_2))+
+  theme_bw()+
+  theme(legend.position = "none")
+
+cowplot::plot_grid(p1, p2, nrow = 1, labels = c("class_1", "class_2"))
+
+```
+
+## Ajuste do modelo
+
+A seguir, ajustamos o modelo MclustDA para as classificações `class_1` e `class_2` da base de treino:
+
+\ 
+
+```{r}
+#| label: fit treino
+#| output: false
+#| echo: true
+
+mod1 <- dados %>%
+  dplyr::filter(treino == 1) %$%
+  MclustDA(data = cbind(eruptions, waiting), 
+           class = class_1)
+
+mod2 <- dados %>%
+  dplyr::filter(treino == 1) %$%
+  MclustDA(data = cbind(eruptions, waiting), 
+           class = class_2)
+```
+
+## Resultados
+
+Os gráficos a seguir são obtidos usando `plot(modelo, what = "error")`. Pontos pretos indicam erros de classificação.
+
+```{r}
+#| label: fig-resultadosteste
+#| fig-cap: Classificações e erros de classificação para os dados de treinamento.
+
+par(mfrow = c(1, 2))
+plot(mod1, what = "error", main = "Classificações e erros class_1")
+plot(mod2, what = "error", main = "Classificações e erros class_2")
+```
+
+## Desempenho
+
+A função `summary(modelo, newdata, newclass)` permite avaliar o desempenho do modelo em dados não vistos anteriormente, ou seja, de teste/validação.
+
+Os resultados do código abaixo são exibidos no slide seguinte.
+
+
+```{r}
+#| eval: false
+#| echo: true
+
+dados %>% 
+  dplyr::filter(treino == 0) %$%
+  summary(mod1, newdata = tibble(eruptions, waiting), 
+          newclass = class_1)
+
+dados %>% 
+  dplyr::filter(treino == 0) %$%
+  summary(mod1, newdata = tibble(eruptions, waiting), 
+          newclass = class_2)
+```
+
+## Desempenho
+
+![](print_modelos.jpeg){fig-align="center"}
+
+## Desempenho
+
+Para ambos os modelos não houve erro de classificação durante o treinamento e apresentaram os seguites resultados:
+
+- Classe A com densidade estimada por uma única componente gaussiana multivariada elipsoidal;
+- Classe B com densidade estimada por duas componentes gaussianas EEI, ou seja, parâmetros *volume* e *shape* iguais e matriz de covariância equivalente à identidade.
+- Desempenho do modelo 1 é superior ao modelo 2 em termos de erro de classificação dos dados de *teste*.
+
+
+# Avaliação da performance
+
+## Erro de classificação
+
+*Missclassification error rate* é a proporção das predições erradas feitas pelo classificador:
+
+$$
+\text{CE} = \frac{1}{n} \sum\limits_{i=1}^{n} \mathbb{I}(y_i \neq \hat{y}_i),
+$$
+
+onde $y_i$ é a classe conhecida para a $i$-ésima observação e $\hat{y}_i$ é a classe predita e $\mathbb{I}$ é a função indicadora que assume valor 1 se $y_i \neq \hat{y}_i$ e 0 caso contrário.
+
+Um bom classificador tem taxa de erro próxima a zero.
+
+## Brier score
+
+É computada como o quadrado médio da diferença entre a probabilidade predita e a classe real:
+
+$$
+\text{BS} = \frac{1}{2n} \sum\limits_{i=1}^{n} \sum\limits_{k=1}^{K} (C_{ik} - \hat{p}_{ik})^2,
+$$
+\ 
+
+onde $n$ é o número de observações, $K$ é o número de classes, $C_{ik} = 1$ se a observação $i$ for da classe $k$ e 0 caso contrário, e $\hat{p}_{ik}$ é a probabilidade predita da observação $i$ ser da classe $k$. A constante $1/2$ garante que o score varie entre 0 e 1.
+
+Um bom classificador tem score próximo a zero.
+
+## Validação cruzada
+
+A validação cruzada é uma técnica indicada quando a base de dados não tem tamanho suficiente para garantir que a simples divisão entre conjuntos de treinamento e teste seja suficiente para garantir a generalização do modelo.
+
+Um esquema $V$-fold de reamostragem utiliza $V$ partições da base de dados, treinando o modelo em $V-1$ partições e testando em uma. O erro de classificação é a média dos erros obtidos em cada partição.
+
+Quando $V$ é igual ao tamanho da base de dados, temos a técnica *leave-one-out*. 
+
+Valores grandes de $V$ reduzem viés do estimador, mas aumentam sua variância. Valores pequenos de $V$ fazem o inverso.
+
+## Validação cruzada
+
+A função `cvMclustDA()` realiza a validação cruzada com os seguintes argumentos:
+
+\ 
+
+```{r}
+#| eval: false
+#| echo: true
+
+cvMclustDA(object, nfold = 10, 
+           prop = object$prop,
+           verbose = interactive(), 
+           ...)
+```
+
+## Validação cruzada
+
+```{r}
+#| label: cross-validation
+
+cv1_loo <- cvMclustDA(mod1, nfold = nrow(dados))
+cv2_loo <- cvMclustDA(mod2, nfold = nrow(dados))
+
+cv1_5 <- cvMclustDA(mod1, nfold = 5)
+cv2_5 <- cvMclustDA(mod2, nfold = 5)
+
+ce_table <- tibble(
+  modelo = c("class_1", "class_2"),
+  LOO = c(cv1_loo$ce, cv2_loo$ce),
+  "5-fold" = c(cv1_5$ce, cv2_5$ce)
+)
+
+bs_table <- tibble(
+  modelo = c("class_1", "class_2"),
+  LOO = c(cv1_loo$brier, cv2_loo$brier),
+  "5-fold" = c(cv1_5$brier, cv2_5$brier)
+)
+```
+
+```{r}
+#| label: print-cv
+#| tbl-pos: center
+
+knitr::kable(ce_table, caption = "Erro de classificação")
+knitr::kable(bs_table, caption = "Brier score")
+```
+
+
+## NOVO SLIDE
+
+# Obrigado!
+
+```{r}
+#| label: qrcode
+
+qrcode::qr_code("https://github.com/cesar-galvao/TE2-id-padroes") %>%
+  plot()
+```
+
