@@ -23,9 +23,9 @@ Prof. George Von Borries
 ## Integrantes
 
 -   César A. Galvão - 190011572
--   Gabriela Carneiro - 180120816
--   João Vitor Vasconcelos - 170126064
--   Kevyn Andrade de Souza - 190015853
+- Gabriela Carneiro - 180120816
+- João Vitor Vasconcelos - 170126064
+- Kevyn Andrade de Souza - 190015853
 
 # Contextualização
 
@@ -37,13 +37,12 @@ Prof. George Von Borries
 
  
 
--   Desejamos classificar uma observação $\mathbf{x}$ na classe $C_k, \, k = 1, \dots, K$ a partir de uma probabilidade a posteriori $\text{Pr}(C_k|\mathbf{x})$ para cada classe $k$.
+-   Desejamos classificar uma observação $\mathbf{x}$ na classe $C_k, \, k = 1, \dots, K$ a partir de uma probabilidade a posteriori $\text{Pr}(C_k|\mathbf{x})$ para cada classe $k$.  
 
 ## Classificação supervisionada
 
 Aprendendo as densidades condicionais das classes $f(\mathbf{x}|C_k)$ e das probabilidades a priori $\text{Pr}(C_k)$ --- na prática a frequência relativa de cada grupo --- podemos calcular a probabilidade a posteriori $\text{Pr}(C_k|\mathbf{x})$ a partir do teorema de Bayes:
 
- 
 
 $$
 \text{Pr}(C_k|\mathbf{x}) = \frac{f(\mathbf{x}|C_k) \text{Pr}(C_k)}{\sum\limits_{g=1}^{K} f(\mathbf{x}|C_k) \text{Pr}(C_k)}
