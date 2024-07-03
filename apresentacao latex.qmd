@@ -1,0 +1,52 @@
+---
+title: "GMM"
+subtitle: "Gaussian Mixture Models"
+author:
+  - César A. Galvão - 190011572
+  - Gabriela Carneiro - 180120816
+  - João Vitor Vasconcelos - 170126064
+  - Kevyn Andrade de Souza - 190015853
+format:
+  revealjs: 
+    embed-resources: true
+    self-contained: true
+    slide-number: true
+    preview-links: auto
+    width: 1600
+    heigth: 900
+    scrollable: true
+    css: styles.css
+    footer: Estatística Aplicada
+resources:
+  - demo.pdf
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r}
+
+if(!require("pacman")) install.packages("pacman")
+
+pacman::p_load(
+  readxl,
+  tidyverse,
+  gt,
+  latex2exp)
+
+source("utils/functions.R")
+```
+
+---
+
+# Contextualização
+
+## Classificação supervisionada
+
+\ 
+
+- Principal objetivo é montar uma regra de decisão para classificação, uma análise discriminante;
+
+\ 
+
+- Desejamos classificar uma observação $\mathbf{x}$ na classe $C_k, \, k = 1, \dots, K$ a partir de uma probabilidade a posteriori $\text{Pr}(C_k|\mathbf{x})$ para cada classe $k$.
